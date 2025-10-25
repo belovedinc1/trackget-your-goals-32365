@@ -1,1 +1,4 @@
 project_id = "lgnowiyptxuyhibptqga"
+
+[functions.categorize-expense]
+verify_jwt = true
