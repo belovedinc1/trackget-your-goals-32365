@@ -13,6 +13,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import Savings from "./pages/Savings";
+import SavingsGoalDetail from "./pages/SavingsGoalDetail";
 import EMI from "./pages/EMI";
 import PriceTracking from "./pages/PriceTracking";
 import Reports from "./pages/Reports";
@@ -61,6 +62,16 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <Savings />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/savings/:id"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <SavingsGoalDetail />
                   </AppLayout>
                 </ProtectedRoute>
               }

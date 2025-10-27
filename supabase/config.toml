@@ -1,4 +1,7 @@
 project_id = "lgnowiyptxuyhibptqga"
 
 [functions.categorize-expense]
-verify_jwt = true
+verify_jwt = false
+
+[functions.savings-recommendations]
+verify_jwt = false

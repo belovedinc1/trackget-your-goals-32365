@@ -116,23 +116,27 @@ npm run dev
 - [x] Responsive design for desktop and mobile devices
 - [x] User menu with profile, settings, and logout options
 
-## Phase 4 Completion ✓
+## Phase 4: Expense Management Module ✅
 
-- [x] Database schema for expenses with RLS policies
-- [x] Supabase Storage bucket for receipts with access policies
-- [x] Full expense management UI with filtering and sorting
-- [x] Add expense dialog with form validation
-- [x] AI-powered expense categorization using Lovable AI (Gemini 2.5 Flash)
-- [x] Receipt upload functionality with Supabase Storage
-- [x] Date range filtering and category-based filtering
-- [x] Real-time expense summary cards (total, top category, average)
-- [x] Expense list with delete functionality
-- [x] Edge function for AI categorization (`categorize-expense`)
-- [x] Custom hooks for expense CRUD operations (`useExpenses`)
-- [x] Pagination-ready data structure
-- [x] Sort by date or amount (ascending/descending)
+- Expenses table with RLS policies
+- Receipt storage bucket
+- AI categorization edge function
+- CRUD operations with custom hook
+- Expense list with filters and search
+- Add expense dialog with receipt upload
+- Category-based summaries
 
-## Next Steps (Phase 5)
+## Phase 5: Savings Goals Management ✅
+
+- Savings goals and transactions tables with RLS
+- Goal creation with target amounts and deadlines
+- Progress tracking with visual indicators
+- Individual goal detail pages with charts
+- Transaction management (deposits/withdrawals)
+- AI-powered savings recommendations
+- Progress visualization with Recharts
+
+## Next Steps (Phase 6)
 - Savings goals with progress tracking and milestones
 - EMI calculator and payment reminders
 - Price tracking for products across e-commerce platforms
