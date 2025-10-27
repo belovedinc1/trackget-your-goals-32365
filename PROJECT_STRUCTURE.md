@@ -136,9 +136,18 @@ npm run dev
 - AI-powered savings recommendations
 - Progress visualization with Recharts
 
-## Next Steps (Phase 6)
-- Savings goals with progress tracking and milestones
-- EMI calculator and payment reminders
+## Phase 6: EMI & Loan Management ✅
+
+- EMI loans and payments tables with RLS policies
+- Loan tracking with calculator (principal, rate, tenure)
+- EMI schedule generator with detailed breakdown
+- Payment recording and status tracking
+- Notification settings (email + browser push)
+- User preferences management
+- Individual loan detail pages with payment schedule
+- Upcoming payment alerts and overdue tracking
+
+## Next Steps (Phase 7)
 - Price tracking for products across e-commerce platforms
 - Advanced reporting with charts and analytics
 - Enhanced AI insights with spending pattern analysis

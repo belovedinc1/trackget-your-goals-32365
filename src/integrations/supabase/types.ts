@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      emi_loans: {
+        Row: {
+          created_at: string
+          emi_amount: number
+          id: string
+          interest_rate: number
+          lender_name: string
+          loan_amount: number
+          next_payment_date: string
+          outstanding_amount: number
+          start_date: string
+          status: string
+          tenure_months: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emi_amount: number
+          id?: string
+          interest_rate: number
+          lender_name: string
+          loan_amount: number
+          next_payment_date?: string
+          outstanding_amount: number
+          start_date: string
+          status?: string
+          tenure_months: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emi_amount?: number
+          id?: string
+          interest_rate?: number
+          lender_name?: string
+          loan_amount?: number
+          next_payment_date?: string
+          outstanding_amount?: number
+          start_date?: string
+          status?: string
+          tenure_months?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      emi_payments: {
+        Row: {
+          amount_paid: number
+          created_at: string
+          due_date: string
+          id: string
+          interest_component: number
+          loan_id: string
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          principal_component: number
+          status: string
+        }
+        Insert: {
+          amount_paid: number
+          created_at?: string
+          due_date: string
+          id?: string
+          interest_component: number
+          loan_id: string
+          notes?: string | null
+          payment_date: string
+          payment_method?: string | null
+          principal_component: number
+          status?: string
+        }
+        Update: {
+          amount_paid?: number
+          created_at?: string
+          due_date?: string
+          id?: string
+          interest_component?: number
+          loan_id?: string
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          principal_component?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emi_payments_loan_id_fkey"
+            columns: ["loan_id"]
+            isOneToOne: false
+            referencedRelation: "emi_loans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       expenses: {
         Row: {
           amount: number
@@ -147,6 +245,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_preferences: {
+        Row: {
+          created_at: string
+          email_notifications: boolean
+          id: string
+          push_notifications: boolean
+          reminder_days_before: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          push_notifications?: boolean
+          reminder_days_before?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email_notifications?: boolean
+          id?: string
+          push_notifications?: boolean
+          reminder_days_before?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {

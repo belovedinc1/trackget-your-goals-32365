@@ -43,6 +43,7 @@ export interface EMI {
   start_date: string;
   next_payment_date: string;
   outstanding_amount: number;
+  status: string;
   created_at: string;
   updated_at: string;
 }

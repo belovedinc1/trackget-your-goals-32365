@@ -15,6 +15,7 @@ import Expenses from "./pages/Expenses";
 import Savings from "./pages/Savings";
 import SavingsGoalDetail from "./pages/SavingsGoalDetail";
 import EMI from "./pages/EMI";
+import EMIDetail from "./pages/EMIDetail";
 import PriceTracking from "./pages/PriceTracking";
 import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
@@ -82,6 +83,16 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <EMI />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/emi/:id"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <EMIDetail />
                   </AppLayout>
                 </ProtectedRoute>
               }
