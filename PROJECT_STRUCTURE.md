@@ -147,7 +147,19 @@ npm run dev
 - Individual loan detail pages with payment schedule
 - Upcoming payment alerts and overdue tracking
 
-## Next Steps (Phase 7)
-- Price tracking for products across e-commerce platforms
-- Advanced reporting with charts and analytics
+## Phase 7: Product Price Tracking ✅
+
+- Tracked products and price history tables with RLS policies
+- Product tracking with URL, current price, and target price
+- Multi-platform support (Amazon, Flipkart, etc.)
+- Add product dialog with platform selection
+- Active/paused product status toggle
+- Price history visualization with Recharts
+- Mock price scraping edge function (check-prices)
+- Price trend charts with lowest, average, and highest prices
+- Price drop detection and alerts (logged)
+
+## Next Steps (Phase 8)
+- Advanced reporting with customizable date ranges
 - Enhanced AI insights with spending pattern analysis
+- PDF/CSV report exports

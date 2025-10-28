@@ -148,6 +148,35 @@ export type Database = {
         }
         Relationships: []
       }
+      price_history: {
+        Row: {
+          id: string
+          price: number
+          product_id: string
+          recorded_at: string
+        }
+        Insert: {
+          id?: string
+          price: number
+          product_id: string
+          recorded_at?: string
+        }
+        Update: {
+          id?: string
+          price?: number
+          product_id?: string
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "tracked_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -245,6 +274,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tracked_products: {
+        Row: {
+          created_at: string
+          current_price: number
+          id: string
+          image_url: string | null
+          is_active: boolean
+          last_checked_at: string | null
+          platform: string
+          product_name: string
+          product_url: string
+          target_price: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_price: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          last_checked_at?: string | null
+          platform: string
+          product_name: string
+          product_url: string
+          target_price?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_price?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          last_checked_at?: string | null
+          platform?: string
+          product_name?: string
+          product_url?: string
+          target_price?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_preferences: {
         Row: {
