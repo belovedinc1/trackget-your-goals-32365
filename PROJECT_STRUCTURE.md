@@ -159,7 +159,23 @@ npm run dev
 - Price trend charts with lowest, average, and highest prices
 - Price drop detection and alerts (logged)
 
-## Next Steps (Phase 8)
-- Advanced reporting with customizable date ranges
-- Enhanced AI insights with spending pattern analysis
-- PDF/CSV report exports
+## Phase 8: Reporting & Analytics ✅
+
+- Comprehensive reports dashboard at /reports
+- Date range filtering with calendar component
+- Summary cards for expenses, savings, and EMI
+- Chart components:
+  - IncomeVsExpenseChart (Bar chart for monthly spending trends)
+  - CategoryBreakdownChart (Pie chart for expense distribution)
+  - SavingsSummaryChart (Progress bars for all savings goals)
+- AI-powered financial insights using Lovable AI (Gemini)
+- Export functionality:
+  - PDF export with jsPDF (detailed financial summary)
+  - CSV export with Papa Parse (data analysis ready)
+- Custom hook: useReportData for aggregated financial data
+- Edge function: generate-report-insights for AI analysis
+- Responsive layout with loading states and error handling
+
+## Next Steps
+- User feedback and feature enhancements
+- Performance optimization and analytics
