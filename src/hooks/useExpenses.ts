@@ -35,7 +35,8 @@ export function useExpenses(filters?: ExpenseFilters) {
       let query = supabase
         .from("expenses")
         .select("*")
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .eq("type", "expense"); // ✅ Only fetch expense type
 
       if (filters?.category && filters.category !== "all") {
         query = query.eq("category", filters.category);
@@ -63,7 +64,6 @@ export function useExpenses(filters?: ExpenseFilters) {
         });
         throw error;
       }
-
       return data as Expense[];
     },
     enabled: !!user,
