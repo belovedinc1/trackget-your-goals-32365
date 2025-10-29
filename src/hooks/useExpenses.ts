@@ -70,6 +70,53 @@ export function useExpenses(filters?: ExpenseFilters) {
   });
 }
 
+export function useTransactions(filters?: ExpenseFilters) {
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  return useQuery({
+    queryKey: ["transactions", user?.id, filters],
+    queryFn: async () => {
+      if (!user) return [];
+
+      let query = supabase
+        .from("expenses")
+        .select("*")
+        .eq("user_id", user.id); // ✅ fetch both income and expense
+
+      if (filters?.category && filters.category !== "all") {
+        query = query.eq("category", filters.category);
+      }
+
+      if (filters?.startDate) {
+        query = query.gte("expense_date", filters.startDate);
+      }
+
+      if (filters?.endDate) {
+        query = query.lte("expense_date", filters.endDate);
+      }
+
+      const sortColumn = filters?.sortBy === "amount" ? "amount" : "expense_date";
+      const ascending = filters?.sortOrder === "asc";
+      query = query.order(sortColumn, { ascending });
+
+      const { data, error } = await query;
+
+      if (error) {
+        toast({
+          title: "Error loading transactions",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      return data as Expense[];
+    },
+    enabled: !!user,
+  });
+}
+
 export function useCreateExpense() {
   const { user } = useAuth();
   const { toast } = useToast();
