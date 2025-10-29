@@ -32,11 +32,11 @@ export function useExpenses(filters?: ExpenseFilters) {
     queryFn: async () => {
       if (!user) return [];
 
+      // ✅ Remove the .eq("type", "expense") so both income and expense come through
       let query = supabase
         .from("expenses")
         .select("*")
-        .eq("user_id", user.id)
-        .eq("type", "expense"); // ✅ Only fetch expense type
+        .eq("user_id", user.id);
 
       if (filters?.category && filters.category !== "all") {
         query = query.eq("category", filters.category);
@@ -50,23 +50,19 @@ export function useExpenses(filters?: ExpenseFilters) {
         query = query.lte("expense_date", filters.endDate);
       }
 
-      const sortColumn = filters?.sortBy === "amount" ? "amount" : "expense_date";
-      const ascending = filters?.sortOrder === "asc";
-      query = query.order(sortColumn, { ascending });
-
-      const { data, error } = await query;
+      const { data, error } = await query.order("expense_date", { ascending: false });
 
       if (error) {
         toast({
-          title: "Error loading expenses",
+          title: "Error fetching expenses",
           description: error.message,
           variant: "destructive",
         });
         throw error;
       }
-      return data as Expense[];
+
+      return data || [];
     },
-    enabled: !!user,
   });
 }
 
