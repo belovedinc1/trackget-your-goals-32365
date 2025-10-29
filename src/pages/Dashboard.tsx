@@ -11,7 +11,7 @@ import { useMemo } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { data: expenses } = useExpenses({});
+  const { data: transactions } = useExpenses({});
   const { goals } = useSavings();
   const { loans: emis } = useEMI();
 
@@ -25,6 +25,21 @@ const Dashboard = () => {
       date: exp.expense_date,
     }));
   }, [expenses]);
+
+  const totalIncome = useMemo(() => {
+    if (!expenses) return 0;
+    return expenses
+      .filter((t) => t.type === "income")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+  }, [expenses]);
+
+  const totalExpenses = useMemo(() => {
+    if (!expenses) return 0;
+    return expenses
+      .filter((t) => t.type === "expense")
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+  }, [expenses]);
+  const netBalance = totalIncome - totalExpenses;
 
   const upcomingEMIs = useMemo(() => {
     if (!emis) return [];
@@ -63,7 +78,9 @@ const Dashboard = () => {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${(totalSavings - totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            <div className={`text-2xl font-bold ${netBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {netBalance >= 0 ? '+' : '-'}${Math.abs(netBalance).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+            </div>
             <p className="text-xs text-muted-foreground">Current balance</p>
           </CardContent>
         </Card>
