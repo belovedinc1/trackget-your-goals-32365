@@ -15,17 +15,18 @@ const Transactions = () => {
   const { data: expenses, isLoading } = useExpenses({});
 
   const summary = useMemo(() => {
-    if (!expenses) return { totalExpenses: 0, totalIncome: 0, netBalance: 0 };
     
-    const totalExpenses = expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
-    // For now, we'll just show expenses. Income tracking can be enhanced later
-    return {
-      totalExpenses,
-      totalIncome: 0,
-      netBalance: -totalExpenses,
-    };
-  }, [expenses]);
-
+     if (!expenses) return { totalExpenses: 0, totalIncome: 0, netBalance: 0 };
+  const totalIncome = expenses
+    .filter((item) => item.type === "income")
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+  const totalExpenses = expenses
+    .filter((item) => item.type === "expense")
+    .reduce((sum, item) => sum + Number(item.amount), 0);
+  const netBalance = totalIncome - totalExpenses;
+  return { totalExpenses, totalIncome, netBalance };
+}, [expenses]);
+  
   return (
     <div className="container py-8 space-y-8">
       <div className="flex items-center justify-between">
