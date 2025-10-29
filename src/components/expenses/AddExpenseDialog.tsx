@@ -89,6 +89,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
         description: description || null,
         expense_date: date,
         receipt_url: receiptUrl,
+        type: "expense",
       });
 
       // Reset form
