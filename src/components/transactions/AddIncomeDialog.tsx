@@ -51,6 +51,7 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
         description: description || "Income",
         expense_date: date,
         receipt_url: null,
+        type: "income",
       },
       {
         onSuccess: () => {
