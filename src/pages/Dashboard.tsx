@@ -11,39 +11,34 @@ import { useMemo } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { data: expenses } = useExpenses({});
+  const { data: transactions } = useExpenses({}); // renamed for clarity
   const { goals } = useSavings();
   const { loans: emis } = useEMI();
 
   // ✅ Calculate income, expenses, and net balance
   const totalIncome = useMemo(() => {
-    if (!expenses) return 0;
-    return expenses
+    if (!transactions) return 0;
+    return transactions
       .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + Number(t.amount), 0);
-  }, [expenses]);
+  }, [transactions]);
 
   const totalExpenses = useMemo(() => {
-    if (!expenses) return 0;
-    return expenses
+    if (!transactions) return 0;
+    return transactions
       .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + Number(t.amount), 0);
-  }, [expenses]);
+  }, [transactions]);
 
   const netBalance = totalIncome - totalExpenses;
 
   // ✅ Recent Transactions
   const recentTransactions = useMemo(() => {
-    if (!expenses) return [];
-    return expenses.slice(0, 4).map((exp) => ({
-      id: exp.id,
-      description: exp.description || "Transaction",
-      amount: Number(exp.amount),
-      type: exp.type,
-      category: exp.category,
-      date: exp.expense_date,
-    }));
-  }, [expenses]);
+    if (!transactions) return [];
+    return transactions
+      .sort((a, b) => new Date(b.expense_date).getTime() - new Date(a.expense_date).getTime())
+      .slice(0, 4);
+  }, [transactions]);
 
   // ✅ Upcoming EMIs
   const upcomingEMIs = useMemo(() => {
@@ -94,7 +89,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Expenses */}
+        {/* Total Expenses */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
@@ -108,7 +103,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Income */}
+        {/* Total Income */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Income</CardTitle>
@@ -135,7 +130,7 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* ✅ Transactions + EMIs */}
+      {/* ✅ Recent Transactions + EMIs */}
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Recent Transactions */}
         <Card className="lg:col-span-2">
@@ -154,7 +149,7 @@ const Dashboard = () => {
                     <p className="font-medium">{transaction.description}</p>
                     <p className="text-sm text-muted-foreground">
                       {transaction.category} •{" "}
-                      {format(new Date(transaction.date), "MMM dd, yyyy")}
+                      {format(new Date(transaction.expense_date), "MMM dd, yyyy")}
                     </p>
                   </div>
                   <div
@@ -180,7 +175,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* EMI Reminders */}
+        {/* Upcoming EMIs */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -192,10 +187,7 @@ const Dashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {upcomingEMIs.map((emi) => (
-                <div
-                  key={emi.id}
-                  className="space-y-2 border-b pb-3 last:border-0"
-                >
+                <div key={emi.id} className="space-y-2 border-b pb-3 last:border-0">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{emi.lender}</p>
@@ -241,15 +233,13 @@ const Dashboard = () => {
           <div className="flex items-start gap-3 p-3 rounded-lg bg-background">
             <div className="h-2 w-2 rounded-full bg-accent mt-2" />
             <p className="text-sm">
-              Great job! You're on track to reach your vacation savings goal 2
-              months early.
+              Great job! You're on track to reach your vacation savings goal 2 months early.
             </p>
           </div>
           <div className="flex items-start gap-3 p-3 rounded-lg bg-background">
             <div className="h-2 w-2 rounded-full bg-accent mt-2" />
             <p className="text-sm">
-              Based on your expenses, you could save an additional $200/month by
-              optimizing subscriptions.
+              Based on your expenses, you could save an additional $200/month by optimizing subscriptions.
             </p>
           </div>
           <Button variant="default" className="w-full mt-4">
