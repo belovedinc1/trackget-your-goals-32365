@@ -2,20 +2,51 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Wallet, TrendingUp, CreditCard, Receipt, AlertCircle, Sparkles, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useExpenses } from "@/hooks/useExpenses";
+import { useSavings } from "@/hooks/useSavings";
+import { useEMI } from "@/hooks/useEMI";
+import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 
 const Dashboard = () => {
-  // Mock data for demonstration
-  const recentTransactions = [
-    { id: 1, description: "Grocery Shopping", amount: -85.50, category: "Food", date: "2025-10-24" },
-    { id: 2, description: "Salary Deposit", amount: 3500.00, category: "Income", date: "2025-10-23" },
-    { id: 3, description: "Netflix Subscription", amount: -15.99, category: "Entertainment", date: "2025-10-22" },
-    { id: 4, description: "Gas Station", amount: -45.00, category: "Transportation", date: "2025-10-21" },
-  ];
+  const navigate = useNavigate();
+  const { data: expenses } = useExpenses({});
+  const { goals } = useSavings();
+  const { loans: emis } = useEMI();
 
-  const upcomingEMIs = [
-    { id: 1, lender: "Home Loan - Bank A", amount: 1250.00, dueDate: "2025-10-28" },
-    { id: 2, lender: "Car Loan - Bank B", amount: 450.00, dueDate: "2025-10-30" },
-  ];
+  const recentTransactions = useMemo(() => {
+    if (!expenses) return [];
+    return expenses.slice(0, 4).map(exp => ({
+      id: exp.id,
+      description: exp.description || "Expense",
+      amount: -Number(exp.amount),
+      category: exp.category,
+      date: exp.expense_date,
+    }));
+  }, [expenses]);
+
+  const upcomingEMIs = useMemo(() => {
+    if (!emis) return [];
+    return emis.slice(0, 2).map(emi => ({
+      id: emi.id,
+      lender: emi.lender_name,
+      amount: Number(emi.emi_amount),
+      dueDate: emi.next_payment_date,
+    }));
+  }, [emis]);
+
+  const totalExpenses = useMemo(() => {
+    if (!expenses) return 0;
+    return expenses.reduce((sum, exp) => sum + Number(exp.amount), 0);
+  }, [expenses]);
+
+  const totalSavings = useMemo(() => {
+    if (!goals) return 0;
+    return goals.reduce((sum, goal) => sum + Number(goal.current_amount), 0);
+  }, [goals]);
+
+  const activeEMIsCount = emis?.length || 0;
 
   return (
     <div className="container py-8 space-y-8">
@@ -32,11 +63,8 @@ const Dashboard = () => {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$2,458.50</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <ArrowUpRight className="h-3 w-3 text-green-500 mr-1" />
-              +12.5% from last month
-            </p>
+            <div className="text-2xl font-bold">${(totalSavings - totalExpenses).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">Current balance</p>
           </CardContent>
         </Card>
 
@@ -46,11 +74,8 @@ const Dashboard = () => {
             <Receipt className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$1,234.67</div>
-            <p className="text-xs text-muted-foreground flex items-center mt-1">
-              <ArrowDownRight className="h-3 w-3 text-red-500 mr-1" />
-              +8.2% from last month
-            </p>
+            <div className="text-2xl font-bold">${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
         </Card>
 
@@ -60,8 +85,8 @@ const Dashboard = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$5,840.00</div>
-            <p className="text-xs text-muted-foreground">3 active goals</p>
+            <div className="text-2xl font-bold">${totalSavings.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+            <p className="text-xs text-muted-foreground">{goals?.length || 0} active goals</p>
           </CardContent>
         </Card>
 
@@ -71,8 +96,8 @@ const Dashboard = () => {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">2</div>
-            <p className="text-xs text-muted-foreground">Next payment in 4 days</p>
+            <div className="text-2xl font-bold">{activeEMIsCount}</div>
+            <p className="text-xs text-muted-foreground">Active loans</p>
           </CardContent>
         </Card>
       </div>
@@ -90,7 +115,7 @@ const Dashboard = () => {
                 <div key={transaction.id} className="flex items-center justify-between border-b pb-3 last:border-0">
                   <div className="flex-1">
                     <p className="font-medium">{transaction.description}</p>
-                    <p className="text-sm text-muted-foreground">{transaction.category} • {transaction.date}</p>
+                    <p className="text-sm text-muted-foreground">{transaction.category} • {format(new Date(transaction.date), "MMM dd, yyyy")}</p>
                   </div>
                   <div className={`font-semibold ${transaction.amount > 0 ? 'text-green-600' : 'text-foreground'}`}>
                     {transaction.amount > 0 ? '+' : ''}${Math.abs(transaction.amount).toFixed(2)}
@@ -98,7 +123,7 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-            <Button variant="ghost" className="w-full mt-4">
+            <Button variant="ghost" className="w-full mt-4" onClick={() => navigate("/transactions")}>
               View All Transactions
             </Button>
           </CardContent>
@@ -120,14 +145,14 @@ const Dashboard = () => {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{emi.lender}</p>
-                      <p className="text-xs text-muted-foreground">Due: {emi.dueDate}</p>
+                      <p className="text-xs text-muted-foreground">Due: {format(new Date(emi.dueDate), "MMM dd, yyyy")}</p>
                     </div>
                     <Badge variant="outline">${emi.amount.toFixed(2)}</Badge>
                   </div>
                 </div>
               ))}
             </div>
-            <Button variant="outline" className="w-full mt-4">
+            <Button variant="outline" className="w-full mt-4" onClick={() => navigate("/emi")}>
               Manage EMIs
             </Button>
           </CardContent>

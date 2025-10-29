@@ -10,10 +10,12 @@ import Index from "./pages/Index";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import Savings from "./pages/Savings";
 import SavingsGoalDetail from "./pages/SavingsGoalDetail";
+import Transactions from "./pages/Transactions";
 import EMI from "./pages/EMI";
 import EMIDetail from "./pages/EMIDetail";
 import PriceTracking from "./pages/PriceTracking";
@@ -37,6 +39,7 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route
               path="/dashboard"
               element={
@@ -53,6 +56,16 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <Expenses />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transactions"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Transactions />
                   </AppLayout>
                 </ProtectedRoute>
               }

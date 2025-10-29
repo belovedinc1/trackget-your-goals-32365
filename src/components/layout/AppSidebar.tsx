@@ -7,7 +7,8 @@ import {
   FileText,
   User,
   Settings,
-  Bot
+  Bot,
+  ArrowLeftRight
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -25,6 +26,7 @@ import {
 const mainItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Expenses", url: "/expenses", icon: Receipt },
+  { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "Savings", url: "/savings", icon: PiggyBank },
   { title: "EMI & Loans", url: "/emi", icon: CreditCard },
   { title: "Price Tracking", url: "/price-tracking", icon: TrendingUp },
