@@ -82,12 +82,12 @@ export function useCreateExpense() {
       const { data, error } = await supabase
         .from("expenses")
         .insert({
-          ...expense,
-          user_id: user.id,
+        ...expense,
+        user_id: user.id,
+        type: expense.type || "expense",
         })
         .select()
         .single();
-
       if (error) throw error;
       return data as Expense;
     },
