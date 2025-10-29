@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, TrendingUp, TrendingDown, DollarSign } from "lucide-react";
-import { useExpenses } from "@/hooks/useExpenses";
+import { useTransactions } from "@/hooks/useExpenses";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { AddIncomeDialog } from "@/components/transactions/AddIncomeDialog";
 import { format } from "date-fns";
@@ -12,7 +12,7 @@ const Transactions = () => {
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
   
-  const { data: expenses, isLoading } = useExpenses({});
+  const { data: expenses, isLoading } = useTransactions({});
 
   const summary = useMemo(() => {
     
