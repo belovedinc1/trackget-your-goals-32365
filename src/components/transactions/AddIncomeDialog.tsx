@@ -44,7 +44,7 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
       return;
     }
 
-    createExpense.mutate(
+    await createExpense.mutateAsync(
       {
         amount: parseFloat(amount),
         category: "Income",
