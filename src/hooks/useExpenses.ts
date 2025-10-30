@@ -11,6 +11,7 @@ export interface Expense {
   description: string | null;
   expense_date: string;
   receipt_url: string | null;
+  type: string;
   created_at: string;
   updated_at: string;
 }
@@ -61,7 +62,7 @@ export function useExpenses(filters?: ExpenseFilters) {
         throw error;
       }
 
-      return data || [];
+      return (data || []) as Expense[];
     },
   });
 }
@@ -107,7 +108,7 @@ export function useTransactions(filters?: ExpenseFilters) {
         throw error;
       }
 
-      return data as Expense[];
+      return (data || []) as Expense[];
     },
     enabled: !!user,
   });
@@ -125,9 +126,8 @@ export function useCreateExpense() {
       const { data, error } = await supabase
         .from("expenses")
         .insert({
-        ...expense,
-        user_id: user.id,
-        type: expense.type || "expense",
+          ...expense,
+          user_id: user.id,
         })
         .select()
         .single();
@@ -136,6 +136,7 @@ export function useCreateExpense() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast({
         title: "Success",
         description: "Expense added successfully",
@@ -169,6 +170,7 @@ export function useUpdateExpense() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast({
         title: "Success",
         description: "Expense updated successfully",
@@ -195,6 +197,7 @@ export function useDeleteExpense() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
       toast({
         title: "Success",
         description: "Expense deleted successfully",
