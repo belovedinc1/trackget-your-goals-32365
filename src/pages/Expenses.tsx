@@ -27,12 +27,31 @@ const Expenses = () => {
   const { data: expenses = [], isLoading } = useExpenses(filters);
 
   const summary = useMemo(() => {
-  const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-  const byCategory = expenses.reduce((acc, exp) => {
-    acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
-    return acc;
-  }, {} as Record<string, number>);
-  return { total, byCategory };
+    // safe category check, normalize string
+    const normalizedCategory = (c?: string) => (c ? String(c).toLowerCase() : "");
+
+    const expenseItems = expenses.filter((exp) => normalizedCategory(exp.category) !== "income");
+    const incomeItems = expenses.filter((exp) => normalizedCategory(exp.category) === "income");
+
+    const totalExpenses = expenseItems.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
+    const totalIncome = incomeItems.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
+
+    const byCategory = expenseItems.reduce((acc, exp) => {
+      const cat = exp.category || "Uncategorized";
+      acc[cat] = (acc[cat] || 0) + Number(exp.amount || 0);
+      return acc;
+    }, {} as Record<string, number>);
+
+    const expenseCount = expenseItems.length;
+    const avgExpense = expenseCount > 0 ? totalExpenses / expenseCount : 0;
+
+    return {
+      totalExpenses,
+      totalIncome,
+      byCategory,
+      expenseCount,
+      avgExpense,
+    };
   }, [expenses]);
 
   const handleResetFilters = () => {
@@ -64,9 +83,9 @@ const Expenses = () => {
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${summary.total.toFixed(2)}</div>
+            <div className="text-2xl font-bold">${summary.totalExpenses.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              {expenses.length} {expenses.length === 1 ? "transaction" : "transactions"}
+              {summary.expenseCount} {summary.expenseCount === 1 ? "transaction" : "transactions"}
             </p>
           </CardContent>
         </Card>
@@ -99,7 +118,7 @@ const Expenses = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${expenses.length > 0 ? (summary.total / expenses.length).toFixed(2) : "0.00"}
+              ${summary.avgExpense.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground">Per transaction</p>
           </CardContent>
