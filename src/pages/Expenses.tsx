@@ -27,13 +27,13 @@ const Expenses = () => {
   const { data: expenses = [], isLoading } = useExpenses(filters);
 
   const summary = useMemo(() => {
-  // ✅ Separate income and expenses properly
-  const expenseItems = expenses.filter(
-    (exp) => exp.category.toLowerCase() !== "income"
-  );
-  const incomeItems = expenses.filter(
-    (exp) => exp.category.toLowerCase() === "income"
-  );
+  const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const byCategory = expenses.reduce((acc, exp) => {
+    acc[exp.category] = (acc[exp.category] || 0) + exp.amount;
+    return acc;
+  }, {} as Record<string, number>);
+  return { total, byCategory };
+}, [expenses]);
 
   const totalExpenses = expenseItems.reduce((sum, exp) => sum + exp.amount, 0);
   const totalIncome = incomeItems.reduce((sum, exp) => sum + exp.amount, 0);
