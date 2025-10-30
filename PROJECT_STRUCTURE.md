@@ -18,6 +18,20 @@ All previous phases (Project Setup, Authentication, Expense Management, Savings,
 - Natural language financial queries
 - Context-aware advice based on user's actual financial data
 
+### ✅ Phase 10: Settings, Profile & Security (COMPLETED)
+- Comprehensive settings page with multiple sections
+- Profile information management with full name updates
+- Notification preferences (email, push, EMI reminder days)
+- Budget settings with monthly and category-wise limits
+- Data export functionality (CSV format for all user data)
+- Security settings with password change
+- Two-factor authentication toggle
+- Account deletion flow with confirmation
+- Profile page with financial statistics dashboard
+- Achievement system with 6 unlockable achievements
+- Progress tracking for financial goals
+- User statistics cards (net balance, income, expenses, savings)
+
 ## Folder Structure
 
 ```
