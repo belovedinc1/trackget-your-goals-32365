@@ -35,9 +35,14 @@ export const AddBankAccountDialog = ({ open, onOpenChange }: AddBankAccountDialo
 
   const handleSubmit = async (values: z.infer<typeof bankAccountSchema>) => {
     await createAccount.mutateAsync({
-      account_name: values.account_name, account_type: values.account_type, bank_name: values.bank_name,
-      account_number: values.account_number || null, initial_balance: values.initial_balance, current_balance: values.initial_balance,
-      currency: values.currency, is_primary: values.is_primary, status: "active",
+      account_name: values.account_name,
+      account_type: values.account_type,
+      bank_name: values.bank_name,
+      account_number: values.account_number || null,
+      initial_balance: values.initial_balance,
+      currency: values.currency,
+      is_primary: values.is_primary,
+      status: "active",
     });
     form.reset();
     onOpenChange(false);
@@ -65,99 +70,6 @@ export const AddBankAccountDialog = ({ open, onOpenChange }: AddBankAccountDialo
             </div>
           </form>
         </Form>
-            <Input
-              id="accountName"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
-              placeholder="Personal Savings, Business Checking, etc."
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="accountType">Account Type *</Label>
-            <Select value={accountType} onValueChange={(value: any) => setAccountType(value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="savings">Savings</SelectItem>
-                <SelectItem value="checking">Checking</SelectItem>
-                <SelectItem value="credit">Credit Card</SelectItem>
-                <SelectItem value="investment">Investment</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="bankName">Bank Name *</Label>
-            <Input
-              id="bankName"
-              value={bankName}
-              onChange={(e) => setBankName(e.target.value)}
-              placeholder="Chase, Bank of America, etc."
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="accountNumber">Account Number (Optional)</Label>
-            <Input
-              id="accountNumber"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              placeholder="Last 4 digits"
-              maxLength={4}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="initialBalance">Initial Balance *</Label>
-            <Input
-              id="initialBalance"
-              type="number"
-              step="0.01"
-              value={initialBalance}
-              onChange={(e) => setInitialBalance(e.target.value)}
-              placeholder="0.00"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="currency">Currency *</Label>
-            <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="INR">INR (₹)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <Label htmlFor="isPrimary">Set as Primary Account</Label>
-            <Switch
-              id="isPrimary"
-              checked={isPrimary}
-              onCheckedChange={setIsPrimary}
-            />
-          </div>
-
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={createAccount.isPending}>
-              {createAccount.isPending ? "Adding..." : "Add Account"}
-            </Button>
-          </div>
-        </form>
       </DialogContent>
     </Dialog>
   );
