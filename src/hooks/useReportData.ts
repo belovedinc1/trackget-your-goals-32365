@@ -27,11 +27,12 @@ export const useReportData = (startDate: Date, endDate: Date) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Fetch expenses
+      // Fetch expenses (excluding income)
       const { data: expenses, error: expensesError } = await supabase
         .from("expenses")
         .select("*")
         .eq("user_id", user.id)
+        .neq("type", "income")
         .gte("expense_date", format(startDate, "yyyy-MM-dd"))
         .lte("expense_date", format(endDate, "yyyy-MM-dd"))
         .order("expense_date", { ascending: true });

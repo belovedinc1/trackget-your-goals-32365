@@ -8,7 +8,9 @@ import {
   User,
   Settings,
   Bot,
-  ArrowLeftRight
+  ArrowLeftRight,
+  RefreshCw,
+  Wallet
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -29,6 +31,8 @@ const mainItems = [
   { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "Savings", url: "/savings", icon: PiggyBank },
   { title: "EMI & Loans", url: "/emi", icon: CreditCard },
+  { title: "Subscriptions", url: "/subscriptions", icon: RefreshCw },
+  { title: "Bank Accounts", url: "/bank-accounts", icon: Wallet },
   { title: "Price Tracking", url: "/price-tracking", icon: TrendingUp },
   { title: "Reports", url: "/reports", icon: FileText },
 ];

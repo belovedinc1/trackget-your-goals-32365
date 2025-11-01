@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      bank_accounts: {
+        Row: {
+          account_name: string
+          account_number: string | null
+          account_type: string
+          bank_name: string
+          created_at: string
+          currency: string
+          current_balance: number
+          id: string
+          initial_balance: number
+          is_primary: boolean
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name: string
+          account_number?: string | null
+          account_type: string
+          bank_name: string
+          created_at?: string
+          currency?: string
+          current_balance?: number
+          id?: string
+          initial_balance?: number
+          is_primary?: boolean
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string | null
+          account_type?: string
+          bank_name?: string
+          created_at?: string
+          currency?: string
+          current_balance?: number
+          id?: string
+          initial_balance?: number
+          is_primary?: boolean
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_conversations: {
         Row: {
           created_at: string
@@ -170,6 +218,7 @@ export type Database = {
       }
       expenses: {
         Row: {
+          account_id: string | null
           amount: number
           category: string
           created_at: string
@@ -177,10 +226,12 @@ export type Database = {
           expense_date: string
           id: string
           receipt_url: string | null
+          type: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          account_id?: string | null
           amount: number
           category: string
           created_at?: string
@@ -188,10 +239,12 @@ export type Database = {
           expense_date?: string
           id?: string
           receipt_url?: string | null
+          type?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          account_id?: string | null
           amount?: number
           category?: string
           created_at?: string
@@ -199,10 +252,19 @@ export type Database = {
           expense_date?: string
           id?: string
           receipt_url?: string | null
+          type?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       price_history: {
         Row: {
@@ -330,6 +392,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscriptions: {
+        Row: {
+          amount: number
+          billing_cycle: string
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          next_billing_date: string
+          reminder_enabled: boolean
+          service_name: string
+          start_date: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          billing_cycle: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          next_billing_date: string
+          reminder_enabled?: boolean
+          service_name: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          billing_cycle?: string
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          next_billing_date?: string
+          reminder_enabled?: boolean
+          service_name?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       tracked_products: {
         Row: {

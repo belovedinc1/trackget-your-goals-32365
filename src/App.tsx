@@ -23,6 +23,8 @@ import Reports from "./pages/Reports";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import AIAssistant from "./pages/AIAssistant";
+import Subscriptions from "./pages/Subscriptions";
+import BankAccounts from "./pages/BankAccounts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -156,6 +158,26 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <AIAssistant />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/subscriptions"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Subscriptions />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bank-accounts"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <BankAccounts />
                   </AppLayout>
                 </ProtectedRoute>
               }

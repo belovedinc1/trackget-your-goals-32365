@@ -27,14 +27,10 @@ const Expenses = () => {
   const { data: expenses = [], isLoading } = useExpenses(filters);
 
   const summary = useMemo(() => {
-    // safe category check, normalize string
-    const normalizedCategory = (c?: string) => (c ? String(c).toLowerCase() : "");
-
-    const expenseItems = expenses.filter((exp) => normalizedCategory(exp.category) !== "income");
-    const incomeItems = expenses.filter((exp) => normalizedCategory(exp.category) === "income");
-
+    // Filter by type field, not category
+    const expenseItems = expenses.filter((exp) => exp.type !== "income");
+    
     const totalExpenses = expenseItems.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
-    const totalIncome = incomeItems.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
 
     const byCategory = expenseItems.reduce((acc, exp) => {
       const cat = exp.category || "Uncategorized";
@@ -47,7 +43,6 @@ const Expenses = () => {
 
     return {
       totalExpenses,
-      totalIncome,
       byCategory,
       expenseCount,
       avgExpense,
