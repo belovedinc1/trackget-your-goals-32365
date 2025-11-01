@@ -1,13 +1,21 @@
-import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateExpense } from "@/hooks/useExpenses";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+const incomeSchema = z.object({
+  amount: z.number().positive("Amount must be positive").max(10000000, "Amount too large"),
+  description: z.string().max(500, "Description must be less than 500 characters").optional(),
+  expense_date: z.string(),
+});
 
 interface AddIncomeDialogProps {
   open: boolean;
@@ -19,13 +27,16 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
   const { toast } = useToast();
   const createExpense = useCreateExpense();
   
-  const [amount, setAmount] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const form = useForm<z.infer<typeof incomeSchema>>({
+    resolver: zodResolver(incomeSchema),
+    defaultValues: {
+      amount: 0,
+      description: "",
+      expense_date: new Date().toISOString().split('T')[0],
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async (values: z.infer<typeof incomeSchema>) => {
     if (!user) {
       toast({
         title: "Error",
@@ -35,21 +46,12 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
       return;
     }
 
-    if (!amount || parseFloat(amount) <= 0) {
-      toast({
-        title: "Invalid amount",
-        description: "Please enter a valid income amount",
-        variant: "destructive",
-      });
-      return;
-    }
-
     await createExpense.mutateAsync(
       {
-        amount: parseFloat(amount),
+        amount: values.amount,
         category: "Income",
-        description: description || "Income",
-        expense_date: date,
+        description: values.description || "Income",
+        expense_date: values.expense_date,
         receipt_url: null,
         type: "income",
       },
@@ -59,9 +61,7 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
             title: "Income added",
             description: "Your income has been recorded successfully",
           });
-          setAmount("");
-          setDescription("");
-          setDate(new Date().toISOString().split('T')[0]);
+          form.reset();
           onOpenChange(false);
         },
         onError: (error) => {
@@ -84,52 +84,74 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
             Record a new income transaction
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount ($)</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount ($)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="10000000"
+                      placeholder="0.00"
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              placeholder="e.g., Salary, Freelance project, Bonus"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
+            
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="e.g., Salary, Freelance project, Bonus"
+                      rows={3}
+                      maxLength={500}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              required
+            
+            <FormField
+              control={form.control}
+              name="expense_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={createExpense.isPending}>
-              {createExpense.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Add Income
-            </Button>
-          </div>
-        </form>
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createExpense.isPending}>
+                {createExpense.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Add Income
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

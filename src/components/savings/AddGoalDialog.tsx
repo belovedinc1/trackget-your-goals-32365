@@ -2,11 +2,21 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useSavings } from "@/hooks/useSavings";
 import { SavingsGoalType } from "@/types";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+const goalSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title too long"),
+  target_amount: z.number().positive("Target amount must be positive").max(10000000, "Amount too large"),
+  goal_type: z.enum(["Emergency Fund", "Vacation", "Down Payment", "Investment", "Education", "Retirement", "Other"]),
+  deadline: z.string().optional(),
+});
 
 const goalTypes: SavingsGoalType[] = [
   "Emergency Fund",
@@ -20,29 +30,29 @@ const goalTypes: SavingsGoalType[] = [
 
 export const AddGoalDialog = () => {
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [targetAmount, setTargetAmount] = useState("");
-  const [goalType, setGoalType] = useState<SavingsGoalType>("Emergency Fund");
-  const [deadline, setDeadline] = useState("");
-  
   const { createGoal } = useSavings();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const form = useForm<z.infer<typeof goalSchema>>({
+    resolver: zodResolver(goalSchema),
+    defaultValues: {
+      title: "",
+      target_amount: 0,
+      goal_type: "Emergency Fund",
+      deadline: "",
+    },
+  });
+
+  const handleSubmit = (values: z.infer<typeof goalSchema>) => {
     createGoal.mutate({
-      title,
-      target_amount: parseFloat(targetAmount),
+      title: values.title,
+      target_amount: values.target_amount,
       current_amount: 0,
-      goal_type: goalType,
-      deadline: deadline || undefined,
+      goal_type: values.goal_type,
+      deadline: values.deadline || undefined,
     });
     
     setOpen(false);
-    setTitle("");
-    setTargetAmount("");
-    setGoalType("Emergency Fund");
-    setDeadline("");
+    form.reset();
   };
 
   return (
@@ -57,62 +67,88 @@ export const AddGoalDialog = () => {
         <DialogHeader>
           <DialogTitle>Create Savings Goal</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Goal Title</Label>
-            <Input
-              id="title"
-              placeholder="e.g., Emergency Fund"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Goal Title</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Emergency Fund" maxLength={100} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="amount">Target Amount ($)</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              min="0"
-              placeholder="10000"
-              value={targetAmount}
-              onChange={(e) => setTargetAmount(e.target.value)}
-              required
+            <FormField
+              control={form.control}
+              name="target_amount"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Target Amount ($)</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="10000000"
+                      placeholder="10000"
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="type">Goal Type</Label>
-            <Select value={goalType} onValueChange={(value) => setGoalType(value as SavingsGoalType)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {goalTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="deadline">Target Date (Optional)</Label>
-            <Input
-              id="deadline"
-              type="date"
-              value={deadline}
-              onChange={(e) => setDeadline(e.target.value)}
+            <FormField
+              control={form.control}
+              name="goal_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Goal Type</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {goalTypes.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          <Button type="submit" className="w-full" disabled={createGoal.isPending}>
-            {createGoal.isPending ? "Creating..." : "Create Goal"}
-          </Button>
-        </form>
+            <FormField
+              control={form.control}
+              name="deadline"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Target Date (Optional)</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Button type="submit" className="w-full" disabled={createGoal.isPending}>
+              {createGoal.isPending ? "Creating..." : "Create Goal"}
+            </Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

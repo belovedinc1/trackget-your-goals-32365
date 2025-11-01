@@ -1,24 +1,23 @@
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
 import { useCreateSubscription } from "@/hooks/useSubscriptions";
-import { addMonths, addDays, addYears, format } from "date-fns";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+
+const subscriptionSchema = z.object({
+  service_name: z.string().min(1, "Service name is required").max(100, "Service name too long"),
+  amount: z.number().positive("Amount must be positive").max(1000000, "Amount too large"),
+  billing_cycle: z.enum(["weekly", "monthly", "quarterly", "yearly"]),
+  start_date: z.string(),
+  category: z.string().max(50, "Category too long").optional(),
+  description: z.string().max(500, "Description too long").optional(),
+});
 
 interface AddSubscriptionDialogProps {
   open: boolean;
@@ -26,56 +25,53 @@ interface AddSubscriptionDialogProps {
 }
 
 export const AddSubscriptionDialog = ({ open, onOpenChange }: AddSubscriptionDialogProps) => {
-  const [serviceName, setServiceName] = useState("");
-  const [amount, setAmount] = useState("");
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly" | "weekly" | "quarterly">("monthly");
-  const [startDate, setStartDate] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-
   const createSubscription = useCreateSubscription();
+  
+  const form = useForm<z.infer<typeof subscriptionSchema>>({
+    resolver: zodResolver(subscriptionSchema),
+    defaultValues: {
+      service_name: "",
+      amount: 0,
+      billing_cycle: "monthly",
+      start_date: new Date().toISOString().split("T")[0],
+      category: "",
+      description: "",
+    },
+  });
 
-  const calculateNextBillingDate = () => {
-    const start = new Date(startDate);
-    switch (billingCycle) {
+  const calculateNextBillingDate = (startDate: string, cycle: string) => {
+    const date = new Date(startDate);
+    switch (cycle) {
       case "weekly":
-        return format(addDays(start, 7), "yyyy-MM-dd");
+        date.setDate(date.getDate() + 7);
+        break;
       case "monthly":
-        return format(addMonths(start, 1), "yyyy-MM-dd");
+        date.setMonth(date.getMonth() + 1);
+        break;
       case "quarterly":
-        return format(addMonths(start, 3), "yyyy-MM-dd");
+        date.setMonth(date.getMonth() + 3);
+        break;
       case "yearly":
-        return format(addYears(start, 1), "yyyy-MM-dd");
-      default:
-        return format(addMonths(start, 1), "yyyy-MM-dd");
+        date.setFullYear(date.getFullYear() + 1);
+        break;
     }
+    return date.toISOString().split("T")[0];
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!serviceName || !amount) {
-      return;
-    }
-
+  const handleSubmit = async (values: z.infer<typeof subscriptionSchema>) => {
     await createSubscription.mutateAsync({
-      service_name: serviceName,
-      amount: parseFloat(amount),
-      billing_cycle: billingCycle,
-      start_date: startDate,
-      next_billing_date: calculateNextBillingDate(),
-      status: "active",
-      category: category || undefined,
-      description: description || undefined,
+      service_name: values.service_name,
+      amount: values.amount,
+      billing_cycle: values.billing_cycle,
+      start_date: values.start_date,
+      next_billing_date: calculateNextBillingDate(values.start_date, values.billing_cycle),
+      category: values.category || null,
+      description: values.description || null,
       reminder_enabled: true,
+      status: "active",
     });
 
-    setServiceName("");
-    setAmount("");
-    setBillingCycle("monthly");
-    setStartDate(format(new Date(), "yyyy-MM-dd"));
-    setCategory("");
-    setDescription("");
+    form.reset();
     onOpenChange(false);
   };
 
@@ -86,87 +82,32 @@ export const AddSubscriptionDialog = ({ open, onOpenChange }: AddSubscriptionDia
           <DialogTitle>Add Subscription</DialogTitle>
           <DialogDescription>Add a new recurring subscription</DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="serviceName">Service Name *</Label>
-            <Input
-              id="serviceName"
-              value={serviceName}
-              onChange={(e) => setServiceName(e.target.value)}
-              placeholder="Netflix, Spotify, etc."
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount *</Label>
-            <Input
-              id="amount"
-              type="number"
-              step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="billingCycle">Billing Cycle *</Label>
-            <Select value={billingCycle} onValueChange={(value: any) => setBillingCycle(value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="weekly">Weekly</SelectItem>
-                <SelectItem value="monthly">Monthly</SelectItem>
-                <SelectItem value="quarterly">Quarterly</SelectItem>
-                <SelectItem value="yearly">Yearly</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="startDate">Start Date *</Label>
-            <Input
-              id="startDate"
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              placeholder="Entertainment, Utilities, etc."
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Additional notes..."
-              rows={3}
-            />
-          </div>
-
-          <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={createSubscription.isPending}>
-              {createSubscription.isPending ? "Adding..." : "Add Subscription"}
-            </Button>
-          </div>
-        </form>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField control={form.control} name="service_name" render={({ field }) => (
+              <FormItem><FormLabel>Service Name *</FormLabel><FormControl><Input placeholder="Netflix, Spotify" maxLength={100} {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="amount" render={({ field }) => (
+              <FormItem><FormLabel>Amount ($) *</FormLabel><FormControl><Input type="number" step="0.01" min="0" max="1000000" placeholder="9.99" {...field} onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="billing_cycle" render={({ field }) => (
+              <FormItem><FormLabel>Billing Cycle *</FormLabel><Select value={field.value} onValueChange={field.onChange}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="weekly">Weekly</SelectItem><SelectItem value="monthly">Monthly</SelectItem><SelectItem value="quarterly">Quarterly</SelectItem><SelectItem value="yearly">Yearly</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="start_date" render={({ field }) => (
+              <FormItem><FormLabel>Start Date *</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="category" render={({ field }) => (
+              <FormItem><FormLabel>Category</FormLabel><FormControl><Input placeholder="Entertainment" maxLength={50} {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <FormField control={form.control} name="description" render={({ field }) => (
+              <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Notes" rows={3} maxLength={500} {...field} /></FormControl><FormMessage /></FormItem>
+            )} />
+            <div className="flex gap-2 justify-end">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button type="submit" disabled={createSubscription.isPending}>{createSubscription.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Add Subscription</Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
