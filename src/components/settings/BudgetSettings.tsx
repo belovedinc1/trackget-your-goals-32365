@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useUserPreferences, useUpdateUserPreferences } from "@/hooks/useUserPreferences";
 
 interface BudgetLimit {
   category: string;
@@ -23,10 +25,19 @@ const DEFAULT_CATEGORIES = [
 
 export function BudgetSettings() {
   const { toast } = useToast();
+  const { data: preferences } = useUserPreferences();
+  const updatePreferences = useUpdateUserPreferences();
   const [monthlyBudget, setMonthlyBudget] = useState<number>(5000);
+  const [currency, setCurrency] = useState<string>("USD");
   const [categoryBudgets, setCategoryBudgets] = useState<BudgetLimit[]>(
     DEFAULT_CATEGORIES.map((category) => ({ category, limit: 500 }))
   );
+
+  useEffect(() => {
+    if (preferences?.default_currency) {
+      setCurrency(preferences.default_currency);
+    }
+  }, [preferences]);
 
   const handleMonthlyBudgetChange = (value: string) => {
     const numValue = parseFloat(value) || 0;
@@ -42,15 +53,27 @@ export function BudgetSettings() {
     );
   };
 
-  const handleSave = () => {
-    // Save to localStorage for now (can be migrated to Supabase later)
-    localStorage.setItem("monthlyBudget", monthlyBudget.toString());
-    localStorage.setItem("categoryBudgets", JSON.stringify(categoryBudgets));
-    
-    toast({
-      title: "Budget settings saved",
-      description: "Your budget limits have been updated successfully",
-    });
+  const handleSave = async () => {
+    try {
+      await updatePreferences.mutateAsync({
+        default_currency: currency,
+      });
+
+      // Save to localStorage for now (can be migrated to Supabase later)
+      localStorage.setItem("monthlyBudget", monthlyBudget.toString());
+      localStorage.setItem("categoryBudgets", JSON.stringify(categoryBudgets));
+      
+      toast({
+        title: "Budget settings saved",
+        description: "Your budget limits have been updated successfully",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -60,6 +83,21 @@ export function BudgetSettings() {
         <CardDescription>Set your monthly budget limits by category</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="currency">Default Currency</Label>
+          <Select value={currency} onValueChange={setCurrency}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select currency" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="USD">USD ($) - US Dollar</SelectItem>
+              <SelectItem value="EUR">EUR (€) - Euro</SelectItem>
+              <SelectItem value="INR">INR (₹) - Indian Rupee</SelectItem>
+              <SelectItem value="JPY">JPY (¥) - Japanese Yen</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="monthly-budget">Monthly Budget Limit</Label>
           <div className="flex gap-2">
@@ -102,8 +140,8 @@ export function BudgetSettings() {
           ))}
         </div>
 
-        <Button onClick={handleSave} className="w-full">
-          Save Budget Settings
+        <Button onClick={handleSave} className="w-full" disabled={updatePreferences.isPending}>
+          {updatePreferences.isPending ? "Saving..." : "Save Budget Settings"}
         </Button>
       </CardContent>
     </Card>

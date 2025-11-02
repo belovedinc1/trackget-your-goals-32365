@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wallet, MoreVertical, Trash, Star } from "lucide-react";
+import { Wallet, MoreVertical, Trash, Star, Edit } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,6 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useUpdateBankAccount, useDeleteBankAccount, BankAccount } from "@/hooks/useBankAccounts";
+import { EditBalanceDialog } from "./EditBalanceDialog";
+import { useState } from "react";
 
 interface BankAccountCardProps {
   account: BankAccount;
@@ -17,6 +19,7 @@ interface BankAccountCardProps {
 export const BankAccountCard = ({ account }: BankAccountCardProps) => {
   const updateAccount = useUpdateBankAccount();
   const deleteAccount = useDeleteBankAccount();
+  const [editBalanceOpen, setEditBalanceOpen] = useState(false);
 
   const handleTogglePrimary = async () => {
     await updateAccount.mutateAsync({
@@ -152,6 +155,10 @@ export const BankAccountCard = ({ account }: BankAccountCardProps) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setEditBalanceOpen(true)}>
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Balance
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={handleTogglePrimary}>
                 <Star className="mr-2 h-4 w-4" />
                 {account.is_primary ? "Remove Primary" : "Set as Primary"}
@@ -163,6 +170,12 @@ export const BankAccountCard = ({ account }: BankAccountCardProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+
+        <EditBalanceDialog
+          open={editBalanceOpen}
+          onOpenChange={setEditBalanceOpen}
+          account={account}
+        />
       </CardContent>
     </Card>
   );

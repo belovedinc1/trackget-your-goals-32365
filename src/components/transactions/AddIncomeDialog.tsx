@@ -10,11 +10,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useBankAccounts, useUpdateBankAccount } from "@/hooks/useBankAccounts";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const incomeSchema = z.object({
   amount: z.number().positive("Amount must be positive").max(10000000, "Amount too large"),
   description: z.string().max(500, "Description must be less than 500 characters").optional(),
   expense_date: z.string(),
+  account_id: z.string().min(1, "Please select an account"),
 });
 
 interface AddIncomeDialogProps {
@@ -26,6 +29,8 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
   const { user } = useAuth();
   const { toast } = useToast();
   const createExpense = useCreateExpense();
+  const { data: bankAccounts } = useBankAccounts();
+  const updateAccount = useUpdateBankAccount();
   
   const form = useForm<z.infer<typeof incomeSchema>>({
     resolver: zodResolver(incomeSchema),
@@ -33,6 +38,7 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
       amount: 0,
       description: "",
       expense_date: new Date().toISOString().split('T')[0],
+      account_id: "",
     },
   });
 
@@ -46,33 +52,39 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
       return;
     }
 
-    await createExpense.mutateAsync(
-      {
+    try {
+      await createExpense.mutateAsync({
         amount: values.amount,
         category: "Income",
         description: values.description || "Income",
         expense_date: values.expense_date,
         receipt_url: null,
         type: "income",
-      },
-      {
-        onSuccess: () => {
-          toast({
-            title: "Income added",
-            description: "Your income has been recorded successfully",
-          });
-          form.reset();
-          onOpenChange(false);
-        },
-        onError: (error) => {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        },
+        account_id: values.account_id,
+      });
+
+      // Update bank account balance (credit)
+      const account = bankAccounts?.find(acc => acc.id === values.account_id);
+      if (account) {
+        await updateAccount.mutateAsync({
+          id: account.id,
+          current_balance: Number(account.current_balance) + values.amount,
+        });
       }
-    );
+
+      toast({
+        title: "Income added",
+        description: "Your income has been recorded successfully",
+      });
+      form.reset();
+      onOpenChange(false);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -136,6 +148,31 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="account_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Credit to Account *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select account" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {bankAccounts?.map((account) => (
+                        <SelectItem key={account.id} value={account.id}>
+                          {account.account_name} ({account.currency} {Number(account.current_balance).toFixed(2)})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

@@ -12,6 +12,7 @@ export interface Expense {
   expense_date: string;
   receipt_url: string | null;
   type: string;
+  account_id: string | null;
   created_at: string;
   updated_at: string;
 }

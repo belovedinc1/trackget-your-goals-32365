@@ -9,6 +9,7 @@ export interface UserPreferences {
   email_notifications: boolean;
   push_notifications: boolean;
   reminder_days_before: number;
+  default_currency: string;
   created_at: string;
   updated_at: string;
 }

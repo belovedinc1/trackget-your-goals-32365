@@ -25,6 +25,7 @@ import Settings from "./pages/Settings";
 import AIAssistant from "./pages/AIAssistant";
 import Subscriptions from "./pages/Subscriptions";
 import BankAccounts from "./pages/BankAccounts";
+import VirtualCards from "./pages/VirtualCards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -178,6 +179,16 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <BankAccounts />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/virtual-cards"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <VirtualCards />
                   </AppLayout>
                 </ProtectedRoute>
               }

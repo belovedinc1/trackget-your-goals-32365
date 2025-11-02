@@ -489,6 +489,7 @@ export type Database = {
       user_preferences: {
         Row: {
           created_at: string
+          default_currency: string
           email_notifications: boolean
           id: string
           push_notifications: boolean
@@ -498,6 +499,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          default_currency?: string
           email_notifications?: boolean
           id?: string
           push_notifications?: boolean
@@ -507,10 +509,41 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          default_currency?: string
           email_notifications?: boolean
           id?: string
           push_notifications?: boolean
           reminder_days_before?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      virtual_cards: {
+        Row: {
+          card_balance: number
+          card_color: string
+          card_name: string
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_balance?: number
+          card_color?: string
+          card_name: string
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_balance?: number
+          card_color?: string
+          card_name?: string
+          created_at?: string
+          id?: string
           updated_at?: string
           user_id?: string
         }

@@ -15,12 +15,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useBankAccounts, useUpdateBankAccount } from "@/hooks/useBankAccounts";
 
 const expenseSchema = z.object({
   amount: z.number().positive("Amount must be positive").max(10000000, "Amount too large"),
   category: z.string().min(1, "Category is required"),
   description: z.string().max(500, "Description must be less than 500 characters").optional(),
   expense_date: z.string(),
+  account_id: z.string().min(1, "Please select an account"),
 });
 
 interface AddExpenseDialogProps {
@@ -36,6 +38,8 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
   const { toast } = useToast();
   const createExpense = useCreateExpense();
   const categorizeExpense = useCategorizeExpense();
+  const { data: bankAccounts } = useBankAccounts();
+  const updateAccount = useUpdateBankAccount();
 
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
@@ -44,6 +48,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
       category: "",
       description: "",
       expense_date: new Date().toISOString().split("T")[0],
+      account_id: "",
     },
   });
 
@@ -109,7 +114,17 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
         expense_date: values.expense_date,
         receipt_url: receiptUrl,
         type: "expense",
+        account_id: values.account_id,
       });
+
+      // Update bank account balance (debit)
+      const account = bankAccounts?.find(acc => acc.id === values.account_id);
+      if (account) {
+        await updateAccount.mutateAsync({
+          id: account.id,
+          current_balance: Number(account.current_balance) - values.amount,
+        });
+      }
 
       // Reset form
       form.reset();
@@ -223,6 +238,31 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="account_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Debit from Account *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select account" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {bankAccounts?.map((account) => (
+                        <SelectItem key={account.id} value={account.id}>
+                          {account.account_name} ({account.currency} {Number(account.current_balance).toFixed(2)})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

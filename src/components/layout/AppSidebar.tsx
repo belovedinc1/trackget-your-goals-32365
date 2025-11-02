@@ -2,7 +2,7 @@ import {
   LayoutDashboard, 
   Receipt, 
   PiggyBank, 
-  CreditCard, 
+  CreditCard as CreditCardIcon, 
   TrendingUp, 
   FileText,
   User,
@@ -10,7 +10,8 @@ import {
   Bot,
   ArrowLeftRight,
   RefreshCw,
-  Wallet
+  Wallet,
+  Layers
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -30,9 +31,10 @@ const mainItems = [
   { title: "Expenses", url: "/expenses", icon: Receipt },
   { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
   { title: "Savings", url: "/savings", icon: PiggyBank },
-  { title: "EMI & Loans", url: "/emi", icon: CreditCard },
+  { title: "EMI & Loans", url: "/emi", icon: CreditCardIcon },
   { title: "Subscriptions", url: "/subscriptions", icon: RefreshCw },
   { title: "Bank Accounts", url: "/bank-accounts", icon: Wallet },
+  { title: "Virtual Cards", url: "/virtual-cards", icon: Layers },
   { title: "Price Tracking", url: "/price-tracking", icon: TrendingUp },
   { title: "Reports", url: "/reports", icon: FileText },
 ];
