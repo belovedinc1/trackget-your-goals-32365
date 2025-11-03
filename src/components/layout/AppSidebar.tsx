@@ -11,7 +11,8 @@ import {
   ArrowLeftRight,
   RefreshCw,
   Wallet,
-  Layers
+  Layers,
+  FileCheck
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {

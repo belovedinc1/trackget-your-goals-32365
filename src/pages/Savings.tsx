@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Target, TrendingUp, DollarSign } from "lucide-react";
 import { useSavings } from "@/hooks/useSavings";
+import { useCurrency } from "@/hooks/useCurrency";
 import { AddGoalDialog } from "@/components/savings/AddGoalDialog";
 import { GoalCard } from "@/components/savings/GoalCard";
 import { AIRecommendations } from "@/components/savings/AIRecommendations";
 
 const Savings = () => {
+  const { formatAmount } = useCurrency();
   const { goals, isLoading } = useSavings();
 
   const totalSavings = goals?.reduce((sum, goal) => sum + Number(goal.current_amount), 0) || 0;
@@ -29,7 +31,7 @@ const Savings = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalSavings.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatAmount(totalSavings)}</div>
             <p className="text-xs text-muted-foreground">Across all goals</p>
           </CardContent>
         </Card>

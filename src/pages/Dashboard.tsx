@@ -5,12 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useSavings } from "@/hooks/useSavings";
 import { useEMI } from "@/hooks/useEMI";
+import { useCurrency } from "@/hooks/useCurrency";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { formatAmount } = useCurrency();
   const { data: transactions } = useExpenses({}); // renamed for clarity
   const { goals } = useSavings();
   const { loans: emis } = useEMI();
@@ -80,10 +82,7 @@ const Dashboard = () => {
                 netBalance >= 0 ? "text-green-600" : "text-red-600"
               }`}
             >
-              {netBalance >= 0 ? "+" : "-"}$
-              {Math.abs(netBalance).toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-              })}
+              {netBalance >= 0 ? "+" : ""}{formatAmount(netBalance)}
             </div>
             <p className="text-xs text-muted-foreground">Current balance</p>
           </CardContent>
@@ -97,7 +96,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              {formatAmount(totalExpenses)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
@@ -111,7 +110,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+              {formatAmount(totalIncome)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
@@ -159,8 +158,7 @@ const Dashboard = () => {
                         : "text-red-600"
                     }`}
                   >
-                    {transaction.type === "income" ? "+" : "-"}$
-                    {Number(transaction.amount).toFixed(2)}
+                    {transaction.type === "income" ? "+" : "-"}{formatAmount(Number(transaction.amount))}
                   </div>
                 </div>
               ))}
@@ -195,7 +193,7 @@ const Dashboard = () => {
                         Due: {format(new Date(emi.dueDate), "MMM dd, yyyy")}
                       </p>
                     </div>
-                    <Badge variant="outline">${emi.amount.toFixed(2)}</Badge>
+                    <Badge variant="outline">{formatAmount(emi.amount)}</Badge>
                   </div>
                 </div>
               ))}

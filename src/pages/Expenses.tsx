@@ -6,9 +6,11 @@ import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { ExpenseFilters } from "@/components/expenses/ExpenseFilters";
 import { ExpenseList } from "@/components/expenses/ExpenseList";
 import { useExpenses, ExpenseFilters as FilterType } from "@/hooks/useExpenses";
+import { useCurrency } from "@/hooks/useCurrency";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Expenses = () => {
+  const { formatAmount } = useCurrency();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [category, setCategory] = useState("all");
   const [startDate, setStartDate] = useState("");
@@ -78,7 +80,7 @@ const Expenses = () => {
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${summary.totalExpenses.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatAmount(summary.totalExpenses)}</div>
             <p className="text-xs text-muted-foreground">
               {summary.expenseCount} {summary.expenseCount === 1 ? "transaction" : "transactions"}
             </p>
@@ -97,7 +99,7 @@ const Expenses = () => {
                   {Object.entries(summary.byCategory).sort((a, b) => b[1] - a[1])[0][0]}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  ${Object.entries(summary.byCategory).sort((a, b) => b[1] - a[1])[0][1].toFixed(2)}
+                  {formatAmount(Object.entries(summary.byCategory).sort((a, b) => b[1] - a[1])[0][1])}
                 </p>
               </>
             ) : (
@@ -113,7 +115,7 @@ const Expenses = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${summary.avgExpense.toFixed(2)}
+              {formatAmount(summary.avgExpense)}
             </div>
             <p className="text-xs text-muted-foreground">Per transaction</p>
           </CardContent>

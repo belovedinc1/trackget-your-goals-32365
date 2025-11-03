@@ -4,8 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Download, Mail } from "lucide-react";
+import { Download } from "lucide-react";
 import { useUserPreferences, useUpdateUserPreferences } from "@/hooks/useUserPreferences";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useSavings } from "@/hooks/useSavings";
 import { useEMI } from "@/hooks/useEMI";
+import { CURRENCY_SYMBOLS, CURRENCY_NAMES } from "@/hooks/useCurrency";
 import Papa from "papaparse";
 import { format } from "date-fns";
 
@@ -32,6 +34,7 @@ const Settings = () => {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(false);
   const [reminderDays, setReminderDays] = useState(3);
+  const [currency, setCurrency] = useState("USD");
   const [fullName, setFullName] = useState("");
 
   useEffect(() => {
@@ -39,6 +42,7 @@ const Settings = () => {
       setEmailNotifications(preferences.email_notifications);
       setPushNotifications(preferences.push_notifications);
       setReminderDays(preferences.reminder_days_before);
+      setCurrency(preferences.default_currency || "USD");
     }
   }, [preferences]);
 
@@ -53,6 +57,7 @@ const Settings = () => {
       email_notifications: emailNotifications,
       push_notifications: pushNotifications,
       reminder_days_before: reminderDays,
+      default_currency: currency,
     });
   };
 
@@ -211,7 +216,26 @@ const Settings = () => {
               Get notified this many days before EMI due dates
             </p>
           </div>
-          <Button onClick={handleSaveNotifications}>Save Notification Settings</Button>
+          <Separator />
+          <div className="space-y-2">
+            <Label htmlFor="currency">Default Currency</Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger id="currency">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(CURRENCY_SYMBOLS).map(([code, symbol]) => (
+                  <SelectItem key={code} value={code}>
+                    {symbol} - {CURRENCY_NAMES[code]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              This currency will be used throughout the app
+            </p>
+          </div>
+          <Button onClick={handleSaveNotifications}>Save Settings</Button>
         </CardContent>
       </Card>
 
