@@ -6,12 +6,14 @@ import { EMI } from "@/types";
 import { Link } from "react-router-dom";
 import { format, differenceInDays } from "date-fns";
 import { useEMI } from "@/hooks/useEMI";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface EMICardProps {
   loan: EMI;
 }
 
 export const EMICard = ({ loan }: EMICardProps) => {
+  const { formatAmount } = useCurrency();
   const { deleteLoan } = useEMI();
   const progress = ((Number(loan.loan_amount) - Number(loan.outstanding_amount)) / Number(loan.loan_amount)) * 100;
   const nextPaymentDate = new Date(loan.next_payment_date);
@@ -56,14 +58,14 @@ export const EMICard = ({ loan }: EMICardProps) => {
               <DollarSign className="h-4 w-4" />
               Monthly EMI
             </p>
-            <p className="text-lg font-bold">${Number(loan.emi_amount).toLocaleString()}</p>
+            <p className="text-lg font-bold">{formatAmount(Number(loan.emi_amount))}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground flex items-center gap-1">
               <TrendingDown className="h-4 w-4" />
               Outstanding
             </p>
-            <p className="text-lg font-bold">${Number(loan.outstanding_amount).toLocaleString()}</p>
+            <p className="text-lg font-bold">{formatAmount(Number(loan.outstanding_amount))}</p>
           </div>
         </div>
 

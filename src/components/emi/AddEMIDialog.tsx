@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const emiSchema = z.object({
   lender_name: z.string().min(1, "Lender name is required").max(100, "Lender name too long"),
@@ -19,6 +20,7 @@ const emiSchema = z.object({
 });
 
 export const AddEMIDialog = () => {
+  const { formatAmount, symbol } = useCurrency();
   const [open, setOpen] = useState(false);
   const [calculatedEMI, setCalculatedEMI] = useState<number>(0);
   const { createLoan } = useEMI();
@@ -113,7 +115,7 @@ export const AddEMIDialog = () => {
                 name="loan_amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Loan Amount ($)</FormLabel>
+                    <FormLabel>Loan Amount ({symbol})</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -184,15 +186,15 @@ export const AddEMIDialog = () => {
               <CardContent className="grid gap-3 md:grid-cols-3">
                 <div>
                   <p className="text-sm text-muted-foreground">Monthly EMI</p>
-                  <p className="text-2xl font-bold">${calculatedEMI.toFixed(2)}</p>
+                  <p className="text-2xl font-bold">{formatAmount(calculatedEMI)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Interest</p>
-                  <p className="text-xl font-semibold">${totalInterest.toFixed(2)}</p>
+                  <p className="text-xl font-semibold">{formatAmount(totalInterest)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Payment</p>
-                  <p className="text-xl font-semibold">${totalAmount.toFixed(2)}</p>
+                  <p className="text-xl font-semibold">{formatAmount(totalAmount)}</p>
                 </div>
               </CardContent>
             </Card>

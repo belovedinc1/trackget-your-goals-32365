@@ -11,6 +11,7 @@ import { Loader2, Sparkles, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,6 +32,7 @@ interface AddExpenseDialogProps {
 }
 
 export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) {
+  const { symbol } = useCurrency();
   const [receipt, setReceipt] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -152,7 +154,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount *</FormLabel>
+                  <FormLabel>Amount ({symbol}) *</FormLabel>
                   <FormControl>
                     <Input
                       type="number"

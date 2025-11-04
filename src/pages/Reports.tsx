@@ -4,6 +4,7 @@ import { Download, FileDown, Calendar } from "lucide-react";
 import { useState } from "react";
 import { useReportData } from "@/hooks/useReportData";
 import { startOfMonth, endOfMonth, subMonths } from "date-fns";
+import { useCurrency } from "@/hooks/useCurrency";
 import { exportToPDF, exportToCSV } from "@/lib/exportUtils";
 import { Skeleton } from "@/components/ui/skeleton";
 import IncomeVsExpenseChart from "@/components/reports/IncomeVsExpenseChart";
@@ -17,6 +18,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
 const Reports = () => {
+  const { formatAmount } = useCurrency();
   const [startDate, setStartDate] = useState<Date>(startOfMonth(subMonths(new Date(), 2)));
   const [endDate, setEndDate] = useState<Date>(endOfMonth(new Date()));
 
@@ -106,7 +108,7 @@ const Reports = () => {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹{reportData.expenses.total.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{formatAmount(reportData.expenses.total)}</div>
               </CardContent>
             </Card>
             <Card>
@@ -114,9 +116,9 @@ const Reports = () => {
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Savings</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹{reportData.savings.totalSaved.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{formatAmount(reportData.savings.totalSaved)}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Target: ₹{reportData.savings.totalTarget.toLocaleString()}
+                  Target: {formatAmount(reportData.savings.totalTarget)}
                 </p>
               </CardContent>
             </Card>
@@ -125,9 +127,9 @@ const Reports = () => {
                 <CardTitle className="text-sm font-medium text-muted-foreground">EMI Outstanding</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">₹{reportData.emi.totalOutstanding.toLocaleString()}</div>
+                <div className="text-2xl font-bold">{formatAmount(reportData.emi.totalOutstanding)}</div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Monthly: ₹{reportData.emi.monthlyPayment.toLocaleString()}
+                  Monthly: {formatAmount(reportData.emi.monthlyPayment)}
                 </p>
               </CardContent>
             </Card>

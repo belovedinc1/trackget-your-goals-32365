@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateExpense } from "@/hooks/useExpenses";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useCurrency } from "@/hooks/useCurrency";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +27,7 @@ interface AddIncomeDialogProps {
 }
 
 export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) => {
+  const { symbol } = useCurrency();
   const { user } = useAuth();
   const { toast } = useToast();
   const createExpense = useCreateExpense();
@@ -103,7 +105,7 @@ export const AddIncomeDialog = ({ open, onOpenChange }: AddIncomeDialogProps) =>
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount ($)</FormLabel>
+                  <FormLabel>Amount ({symbol})</FormLabel>
                   <FormControl>
                     <Input
                       type="number"

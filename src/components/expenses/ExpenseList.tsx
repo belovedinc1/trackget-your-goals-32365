@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Expense, useDeleteExpense } from "@/hooks/useExpenses";
 import { FileText, Trash2, Pencil } from "lucide-react";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +22,7 @@ interface ExpenseListProps {
 }
 
 export function ExpenseList({ expenses }: ExpenseListProps) {
+  const { formatAmount } = useCurrency();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const deleteExpense = useDeleteExpense();
 
@@ -51,7 +53,7 @@ export function ExpenseList({ expenses }: ExpenseListProps) {
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-3">
                     <h3 className="font-semibold text-lg">
-                      ${expense.amount.toFixed(2)}
+                      {formatAmount(expense.amount)}
                     </h3>
                     <Badge variant="secondary">{expense.category}</Badge>
                   </div>

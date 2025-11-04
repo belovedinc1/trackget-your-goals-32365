@@ -6,7 +6,7 @@ export interface ReportData {
   expenses: {
     total: number;
     byCategory: Record<string, number>;
-    byMonth: Array<{ month: string; amount: number }>;
+    byMonth: Array<{ month: string; income: number; expenses: number }>;
   };
   savings: {
     totalSaved: number;
@@ -27,17 +27,20 @@ export const useReportData = (startDate: Date, endDate: Date) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      // Fetch expenses (excluding income)
-      const { data: expenses, error: expensesError } = await supabase
+      // Fetch all transactions (both expenses and income)
+      const { data: allTransactions, error: transactionsError } = await supabase
         .from("expenses")
         .select("*")
         .eq("user_id", user.id)
-        .neq("type", "income")
         .gte("expense_date", format(startDate, "yyyy-MM-dd"))
         .lte("expense_date", format(endDate, "yyyy-MM-dd"))
         .order("expense_date", { ascending: true });
 
-      if (expensesError) throw expensesError;
+      if (transactionsError) throw transactionsError;
+
+      // Separate expenses and income
+      const expenses = allTransactions?.filter(t => t.type !== "income") || [];
+      const incomeTransactions = allTransactions?.filter(t => t.type === "income") || [];
 
       // Fetch savings goals
       const { data: savingsGoals, error: savingsError } = await supabase
@@ -63,16 +66,29 @@ export const useReportData = (startDate: Date, endDate: Date) => {
         expensesByCategory[exp.category] = (expensesByCategory[exp.category] || 0) + Number(exp.amount);
       });
 
-      // Group expenses by month
-      const expensesByMonth: Record<string, number> = {};
+      // Group expenses and income by month
+      const monthlyData: Record<string, { income: number; expenses: number }> = {};
+      
       expenses?.forEach(exp => {
         const monthKey = format(new Date(exp.expense_date), "MMM yyyy");
-        expensesByMonth[monthKey] = (expensesByMonth[monthKey] || 0) + Number(exp.amount);
+        if (!monthlyData[monthKey]) {
+          monthlyData[monthKey] = { income: 0, expenses: 0 };
+        }
+        monthlyData[monthKey].expenses += Number(exp.amount);
       });
 
-      const expensesByMonthArray = Object.entries(expensesByMonth).map(([month, amount]) => ({
+      incomeTransactions?.forEach(inc => {
+        const monthKey = format(new Date(inc.expense_date), "MMM yyyy");
+        if (!monthlyData[monthKey]) {
+          monthlyData[monthKey] = { income: 0, expenses: 0 };
+        }
+        monthlyData[monthKey].income += Number(inc.amount);
+      });
+
+      const expensesByMonthArray = Object.entries(monthlyData).map(([month, data]) => ({
         month,
-        amount,
+        income: data.income,
+        expenses: data.expenses,
       }));
 
       // Process savings

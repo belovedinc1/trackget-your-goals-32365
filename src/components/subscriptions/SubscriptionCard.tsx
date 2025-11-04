@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, DollarSign, MoreVertical, Trash, Pause, Play } from "lucide-react";
 import { format } from "date-fns";
+import { useCurrency } from "@/hooks/useCurrency";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +17,7 @@ interface SubscriptionCardProps {
 }
 
 export const SubscriptionCard = ({ subscription }: SubscriptionCardProps) => {
+  const { formatAmount } = useCurrency();
   const updateSubscription = useUpdateSubscription();
   const deleteSubscription = useDeleteSubscription();
 
@@ -86,7 +88,7 @@ export const SubscriptionCard = ({ subscription }: SubscriptionCardProps) => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Amount</p>
-                  <p className="text-base font-semibold">${Number(subscription.amount).toFixed(2)}</p>
+                  <p className="text-base font-semibold">{formatAmount(Number(subscription.amount))}</p>
                 </div>
               </div>
 

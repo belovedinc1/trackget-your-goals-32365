@@ -5,12 +5,14 @@ import { Target, Calendar, TrendingUp } from "lucide-react";
 import { SavingsGoal } from "@/types";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface GoalCardProps {
   goal: SavingsGoal;
 }
 
 export const GoalCard = ({ goal }: GoalCardProps) => {
+  const { formatAmount } = useCurrency();
   const progress = (Number(goal.current_amount) / Number(goal.target_amount)) * 100;
   const remaining = Number(goal.target_amount) - Number(goal.current_amount);
   
@@ -42,14 +44,14 @@ export const GoalCard = ({ goal }: GoalCardProps) => {
               <TrendingUp className="h-4 w-4" />
               Current
             </p>
-            <p className="text-lg font-bold">${Number(goal.current_amount).toLocaleString()}</p>
+            <p className="text-lg font-bold">{formatAmount(Number(goal.current_amount))}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground flex items-center gap-1">
               <Target className="h-4 w-4" />
               Target
             </p>
-            <p className="text-lg font-bold">${Number(goal.target_amount).toLocaleString()}</p>
+            <p className="text-lg font-bold">{formatAmount(Number(goal.target_amount))}</p>
           </div>
         </div>
 
@@ -62,7 +64,7 @@ export const GoalCard = ({ goal }: GoalCardProps) => {
 
         <div className="pt-2 border-t">
           <p className="text-sm text-muted-foreground mb-2">
-            ${remaining.toLocaleString()} remaining
+            {formatAmount(remaining)} remaining
           </p>
           <Link to={`/savings/${goal.id}`}>
             <Button variant="outline" className="w-full">

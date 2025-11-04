@@ -7,8 +7,10 @@ import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { AddIncomeDialog } from "@/components/transactions/AddIncomeDialog";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const Transactions = () => {
+  const { formatAmount } = useCurrency();
   const [expenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [incomeDialogOpen, setIncomeDialogOpen] = useState(false);
   
@@ -54,7 +56,7 @@ const Transactions = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              ${summary.totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {formatAmount(summary.totalIncome)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
@@ -67,7 +69,7 @@ const Transactions = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              ${summary.totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {formatAmount(summary.totalExpenses)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
@@ -80,7 +82,7 @@ const Transactions = () => {
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${summary.netBalance >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {summary.netBalance >= 0 ? '+' : ''}${summary.netBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              {summary.netBalance >= 0 ? '+' : ''}{formatAmount(summary.netBalance)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
           </CardContent>
@@ -101,20 +103,20 @@ const Transactions = () => {
                 <div key={transaction.id} className="flex items-center justify-between border-b pb-4 last:border-0">
                   <div className="flex items-center gap-4">
                     <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                      transaction.amount < 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
+                      transaction.type === "expense" ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
                     }`}>
-                      {transaction.amount < 0 ? <TrendingDown className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}
+                      {transaction.type === "expense" ? <TrendingDown className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}
                     </div>
                     <div>
-                      <p className="font-medium">{transaction.description || "Expense"}</p>
+                      <p className="font-medium">{transaction.description || (transaction.type === "income" ? "Income" : "Expense")}</p>
                       <p className="text-sm text-muted-foreground">
                         {format(new Date(transaction.expense_date), "MMM dd, yyyy")}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className={`font-semibold ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      ${Math.abs(transaction.amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                    <p className={`font-semibold ${transaction.type === "expense" ? 'text-red-600' : 'text-green-600'}`}>
+                      {transaction.type === "income" ? '+' : '-'}{formatAmount(transaction.amount)}
                     </p>
                     <Badge variant="outline" className="mt-1">{transaction.category}</Badge>
                   </div>

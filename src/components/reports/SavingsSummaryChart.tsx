@@ -1,11 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface SavingsSummaryChartProps {
   goals: Array<{ title: string; progress: number; current: number; target: number }>;
 }
 
 const SavingsSummaryChart = ({ goals }: SavingsSummaryChartProps) => {
+  const { formatAmount } = useCurrency();
+  
   return (
     <Card>
       <CardHeader>
@@ -21,7 +24,7 @@ const SavingsSummaryChart = ({ goals }: SavingsSummaryChartProps) => {
               <div className="flex justify-between text-sm">
                 <span className="font-medium">{goal.title}</span>
                 <span className="text-muted-foreground">
-                  ₹{goal.current.toLocaleString()} / ₹{goal.target.toLocaleString()}
+                  {formatAmount(goal.current)} / {formatAmount(goal.target)}
                 </span>
               </div>
               <Progress value={goal.progress} className="h-2" />

@@ -3,9 +3,11 @@ import { TrendingUp, TrendingDown, Target, Wallet } from "lucide-react";
 import { useExpenses } from "@/hooks/useExpenses";
 import { useSavings } from "@/hooks/useSavings";
 import { useEMI } from "@/hooks/useEMI";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useMemo } from "react";
 
 export function ProfileStats() {
+  const { formatAmount } = useCurrency();
   const { data: transactions } = useExpenses({});
   const { goals } = useSavings();
   const { loans } = useEMI();
@@ -51,7 +53,7 @@ export function ProfileStats() {
         </CardHeader>
         <CardContent>
           <div className={`text-2xl font-bold ${stats.netBalance >= 0 ? "text-green-600" : "text-red-600"}`}>
-            ${stats.netBalance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            {formatAmount(stats.netBalance)}
           </div>
         </CardContent>
       </Card>
@@ -63,7 +65,7 @@ export function ProfileStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${stats.totalIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            {formatAmount(stats.totalIncome)}
           </div>
         </CardContent>
       </Card>
@@ -75,7 +77,7 @@ export function ProfileStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${stats.totalExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            {formatAmount(stats.totalExpenses)}
           </div>
         </CardContent>
       </Card>
@@ -87,7 +89,7 @@ export function ProfileStats() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
-            ${stats.totalSavings.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+            {formatAmount(stats.totalSavings)}
           </div>
         </CardContent>
       </Card>
