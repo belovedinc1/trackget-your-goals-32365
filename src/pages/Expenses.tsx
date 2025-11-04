@@ -29,8 +29,8 @@ const Expenses = () => {
   const { data: expenses = [], isLoading } = useExpenses(filters);
 
   const summary = useMemo(() => {
-    // Filter by type field, not category
-    const expenseItems = expenses.filter((exp) => exp.type !== "income");
+    // Filter ONLY expenses (not income) - fixed to use type field correctly
+    const expenseItems = expenses.filter((exp) => exp.type === "expense");
     
     const totalExpenses = expenseItems.reduce((sum, exp) => sum + Number(exp.amount || 0), 0);
 
@@ -48,6 +48,7 @@ const Expenses = () => {
       byCategory,
       expenseCount,
       avgExpense,
+      expenseItems, // Return the filtered expenses for display
     };
   }, [expenses]);
 
@@ -149,7 +150,7 @@ const Expenses = () => {
           ))}
         </div>
       ) : (
-        <ExpenseList expenses={expenses} />
+        <ExpenseList expenses={summary.expenseItems} />
       )}
 
       <AddExpenseDialog open={dialogOpen} onOpenChange={setDialogOpen} />

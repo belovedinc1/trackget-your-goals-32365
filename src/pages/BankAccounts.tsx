@@ -7,8 +7,10 @@ import { useTransactions } from "@/hooks/useExpenses";
 import { AddBankAccountDialog } from "@/components/bank-accounts/AddBankAccountDialog";
 import { BankAccountCard } from "@/components/bank-accounts/BankAccountCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const BankAccounts = () => {
+  const { formatAmount } = useCurrency();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { data: accounts = [], isLoading } = useBankAccounts();
   const { data: transactions = [] } = useTransactions({});
@@ -54,7 +56,7 @@ const BankAccounts = () => {
             <Wallet className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${summary.totalBalance.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatAmount(summary.totalBalance)}</div>
             <p className="text-xs text-muted-foreground">
               {summary.activeAccounts} active {summary.activeAccounts === 1 ? "account" : "accounts"}
             </p>
@@ -68,7 +70,7 @@ const BankAccounts = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
-              ${summary.totalIncome.toFixed(2)}
+              {formatAmount(summary.totalIncome)}
             </div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>
@@ -81,7 +83,7 @@ const BankAccounts = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              ${summary.totalExpenses.toFixed(2)}
+              {formatAmount(summary.totalExpenses)}
             </div>
             <p className="text-xs text-muted-foreground">All time</p>
           </CardContent>

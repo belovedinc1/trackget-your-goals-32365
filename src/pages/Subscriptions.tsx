@@ -7,8 +7,10 @@ import { AddSubscriptionDialog } from "@/components/subscriptions/AddSubscriptio
 import { SubscriptionCard } from "@/components/subscriptions/SubscriptionCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const Subscriptions = () => {
+  const { formatAmount } = useCurrency();
   const [dialogOpen, setDialogOpen] = useState(false);
   const { data: subscriptions = [], isLoading } = useSubscriptions();
 
@@ -63,7 +65,7 @@ const Subscriptions = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalMonthlySpend.toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatAmount(totalMonthlySpend)}</div>
             <p className="text-xs text-muted-foreground">Estimated per month</p>
           </CardContent>
         </Card>
@@ -74,7 +76,7 @@ const Subscriptions = () => {
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${(totalMonthlySpend * 12).toFixed(2)}</div>
+            <div className="text-2xl font-bold">{formatAmount(totalMonthlySpend * 12)}</div>
             <p className="text-xs text-muted-foreground">Total annual cost</p>
           </CardContent>
         </Card>

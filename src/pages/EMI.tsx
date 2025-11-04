@@ -4,8 +4,10 @@ import { useEMI } from "@/hooks/useEMI";
 import { AddEMIDialog } from "@/components/emi/AddEMIDialog";
 import { EMICard } from "@/components/emi/EMICard";
 import { NotificationSettings } from "@/components/emi/NotificationSettings";
+import { useCurrency } from "@/hooks/useCurrency";
 
 const EMI = () => {
+  const { formatAmount } = useCurrency();
   const { loans, isLoading } = useEMI();
 
   const totalOutstanding = loans?.reduce((sum, loan) => sum + Number(loan.outstanding_amount), 0) || 0;
@@ -33,7 +35,7 @@ const EMI = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalOutstanding.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatAmount(totalOutstanding)}</div>
             <p className="text-xs text-muted-foreground">Across all loans</p>
           </CardContent>
         </Card>
@@ -44,7 +46,7 @@ const EMI = () => {
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${monthlyEMI.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatAmount(monthlyEMI)}</div>
             <p className="text-xs text-muted-foreground">Total per month</p>
           </CardContent>
         </Card>

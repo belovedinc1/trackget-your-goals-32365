@@ -11,12 +11,14 @@ import {
 import { useUpdateBankAccount, useDeleteBankAccount, BankAccount } from "@/hooks/useBankAccounts";
 import { EditBalanceDialog } from "./EditBalanceDialog";
 import { useState } from "react";
+import { useCurrency } from "@/hooks/useCurrency";
 
 interface BankAccountCardProps {
   account: BankAccount;
 }
 
 export const BankAccountCard = ({ account }: BankAccountCardProps) => {
+  const { formatAmount } = useCurrency();
   const updateAccount = useUpdateBankAccount();
   const deleteAccount = useDeleteBankAccount();
   const [editBalanceOpen, setEditBalanceOpen] = useState(false);
@@ -119,16 +121,14 @@ export const BankAccountCard = ({ account }: BankAccountCardProps) => {
               <div>
                 <p className="text-sm text-muted-foreground">Current Balance</p>
                 <p className="text-2xl font-bold">
-                  {getCurrencySymbol()}
-                  {Number(account.current_balance).toFixed(2)}
+                  {formatAmount(Number(account.current_balance))}
                 </p>
               </div>
 
               <div>
                 <p className="text-sm text-muted-foreground">Initial Balance</p>
                 <p className="text-base">
-                  {getCurrencySymbol()}
-                  {Number(account.initial_balance).toFixed(2)}
+                  {formatAmount(Number(account.initial_balance))}
                 </p>
               </div>
 
@@ -141,8 +141,7 @@ export const BankAccountCard = ({ account }: BankAccountCardProps) => {
                       : "text-red-600"
                   }`}
                 >
-                  {getCurrencySymbol()}
-                  {(Number(account.current_balance) - Number(account.initial_balance)).toFixed(2)}
+                  {formatAmount(Number(account.current_balance) - Number(account.initial_balance))}
                 </p>
               </div>
             </div>
