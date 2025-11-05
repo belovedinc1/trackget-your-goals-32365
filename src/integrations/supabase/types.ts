@@ -266,6 +266,66 @@ export type Database = {
           },
         ]
       }
+      invoices: {
+        Row: {
+          client_address: string | null
+          client_email: string
+          client_name: string
+          created_at: string | null
+          due_date: string
+          id: string
+          invoice_date: string
+          invoice_number: string
+          items: Json
+          notes: string | null
+          status: string
+          subtotal: number
+          tax_amount: number
+          tax_percentage: number
+          total: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          client_address?: string | null
+          client_email: string
+          client_name: string
+          created_at?: string | null
+          due_date: string
+          id?: string
+          invoice_date: string
+          invoice_number: string
+          items?: Json
+          notes?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_percentage?: number
+          total?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          client_address?: string | null
+          client_email?: string
+          client_name?: string
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          invoice_date?: string
+          invoice_number?: string
+          items?: Json
+          notes?: string | null
+          status?: string
+          subtotal?: number
+          tax_amount?: number
+          tax_percentage?: number
+          total?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       price_history: {
         Row: {
           id: string
