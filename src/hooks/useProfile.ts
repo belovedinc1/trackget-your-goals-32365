@@ -106,10 +106,10 @@ export function useUploadAvatar() {
     mutationFn: async (file: File) => {
       if (!user) throw new Error("User not authenticated");
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage (store under userId folder to satisfy RLS)
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
