@@ -100,6 +100,34 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
     return publicUrl;
   };
 
+  const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Only JPG, PNG, and PDF files are allowed",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Maximum file size is 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setReceipt(file);
+  };
+
   const handleSubmit = async (values: z.infer<typeof expenseSchema>) => {
     setUploading(true);
 
@@ -277,7 +305,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
                 id="receipt"
                 type="file"
                 accept="image/*,.pdf"
-                onChange={(e) => setReceipt(e.target.files?.[0] || null)}
+                onChange={handleReceiptChange}
                 className="cursor-pointer"
               />
               {receipt && (
