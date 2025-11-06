@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateExpense, useCategorizeExpense } from "@/hooks/useExpenses";
 import { EXPENSE_CATEGORIES } from "@/lib/constants";
-import { Loader2, Sparkles, Upload } from "lucide-react";
+import { Loader2, Sparkles, Upload, ScanLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useBankAccounts, useUpdateBankAccount } from "@/hooks/useBankAccounts";
+import { useScanReceipt } from "@/hooks/useScanReceipt";
 
 const expenseSchema = z.object({
   amount: z.number().positive("Amount must be positive").max(10000000, "Amount too large"),
@@ -35,6 +36,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
   const { symbol } = useCurrency();
   const [receipt, setReceipt] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const scanInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuth();
   const { toast } = useToast();
@@ -42,6 +44,7 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
   const categorizeExpense = useCategorizeExpense();
   const { data: bankAccounts } = useBankAccounts();
   const updateAccount = useUpdateBankAccount();
+  const scanReceipt = useScanReceipt();
 
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
@@ -126,6 +129,58 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
     }
 
     setReceipt(file);
+  };
+
+  const handleScanReceipt = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate it's an image (not PDF)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload a JPG or PNG image for scanning",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Maximum file size is 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      toast({
+        title: "Scanning receipt...",
+        description: "AI is analyzing your receipt image",
+      });
+
+      const result = await scanReceipt.mutateAsync(file);
+
+      // Auto-fill form with scanned data
+      form.setValue("amount", result.amount);
+      form.setValue("category", result.category);
+      form.setValue("description", `${result.merchant} - ${result.description}`);
+      form.setValue("expense_date", result.date);
+      
+      // Also set the receipt file for upload
+      setReceipt(file);
+
+      toast({
+        title: "Receipt scanned successfully!",
+        description: `Extracted: ${symbol}${result.amount.toFixed(2)} from ${result.merchant}. Confidence: ${result.confidence}. Please review and confirm.`,
+      });
+    } catch (error) {
+      console.error("Scan error:", error);
+      // Error toast is already shown by the hook
+    }
   };
 
   const handleSubmit = async (values: z.infer<typeof expenseSchema>) => {
@@ -300,6 +355,39 @@ export function AddExpenseDialog({ open, onOpenChange }: AddExpenseDialogProps) 
 
           <div className="space-y-2">
             <Label htmlFor="receipt">Receipt (Optional)</Label>
+            
+            {/* Scan Receipt Button */}
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={() => scanInputRef.current?.click()}
+                disabled={scanReceipt.isPending}
+              >
+                {scanReceipt.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Scanning...
+                  </>
+                ) : (
+                  <>
+                    <ScanLine className="mr-2 h-4 w-4" />
+                    Scan Receipt
+                  </>
+                )}
+              </Button>
+              <input
+                ref={scanInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleScanReceipt}
+                className="hidden"
+              />
+            </div>
+
+            {/* Manual Upload */}
             <div className="flex items-center gap-2">
               <Input
                 id="receipt"
