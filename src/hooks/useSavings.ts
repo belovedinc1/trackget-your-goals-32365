@@ -42,7 +42,8 @@ export const useSavings = () => {
       toast.success("Savings goal created successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to create goal: " + error.message);
+      console.error("[Savings Goal Create Error]", error);
+      toast.error("Failed to create goal. Please try again.");
     },
   });
 
@@ -63,7 +64,8 @@ export const useSavings = () => {
       toast.success("Goal updated successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to update goal: " + error.message);
+      console.error("[Savings Goal Update Error]", error);
+      toast.error("Failed to update goal. Please try again.");
     },
   });
 
@@ -81,7 +83,8 @@ export const useSavings = () => {
       toast.success("Goal deleted successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to delete goal: " + error.message);
+      console.error("[Savings Goal Delete Error]", error);
+      toast.error("Failed to delete goal. Please try again.");
     },
   });
 
@@ -126,7 +129,8 @@ export const useSavings = () => {
       toast.success("Transaction added successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to add transaction: " + error.message);
+      console.error("[Savings Transaction Error]", error);
+      toast.error("Failed to add transaction. Please try again.");
     },
   });
 

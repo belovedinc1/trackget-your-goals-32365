@@ -205,7 +205,7 @@ export const useAIChat = () => {
         await saveMessage(convId, "assistant", assistantMessage);
       }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("[AI Chat Send Error]", error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to send message",

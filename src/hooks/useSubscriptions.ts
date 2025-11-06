@@ -59,7 +59,8 @@ export const useCreateSubscription = () => {
       toast.success("Subscription added successfully");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add subscription: ${error.message}`);
+      console.error("[Subscription Add Error]", error);
+      toast.error("Failed to add subscription. Please try again.");
     },
   });
 };
@@ -84,7 +85,8 @@ export const useUpdateSubscription = () => {
       toast.success("Subscription updated successfully");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update subscription: ${error.message}`);
+      console.error("[Subscription Update Error]", error);
+      toast.error("Failed to update subscription. Please try again.");
     },
   });
 };
@@ -106,7 +108,8 @@ export const useDeleteSubscription = () => {
       toast.success("Subscription deleted successfully");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete subscription: ${error.message}`);
+      console.error("[Subscription Delete Error]", error);
+      toast.error("Failed to delete subscription. Please try again.");
     },
   });
 };

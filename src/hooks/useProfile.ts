@@ -88,9 +88,10 @@ export function useUpdateProfile() {
       });
     },
     onError: (error: Error) => {
+      console.error("[Profile Update Error]", error);
       toast({
         title: "Error updating profile",
-        description: error.message,
+        description: "Unable to update profile. Please try again.",
         variant: "destructive",
       });
     },
@@ -117,17 +118,19 @@ export function useUploadAvatar() {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      // Get signed URL (valid for 1 year for avatars since they don't change often)
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
         .from("avatars")
-        .getPublicUrl(filePath);
+        .createSignedUrl(filePath, 31536000); // 1 year in seconds
+
+      if (signedUrlError) throw signedUrlError;
 
       // Update profile with new avatar URL
       const { data, error } = await supabase
         .from("profiles")
         .upsert({
           id: user.id,
-          avatar_url: publicUrl,
+          avatar_url: signedUrlData.signedUrl,
         })
         .select()
         .single();
@@ -143,9 +146,10 @@ export function useUploadAvatar() {
       });
     },
     onError: (error: Error) => {
+      console.error("[Avatar Upload Error]", error);
       toast({
         title: "Error uploading avatar",
-        description: error.message,
+        description: "Unable to upload profile picture. Please try again.",
         variant: "destructive",
       });
     },

@@ -42,7 +42,8 @@ export const useEMI = () => {
       toast.success("Loan added successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to add loan: " + error.message);
+      console.error("[EMI Add Error]", error);
+      toast.error("Failed to add loan. Please try again.");
     },
   });
 
@@ -63,7 +64,8 @@ export const useEMI = () => {
       toast.success("Loan updated successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to update loan: " + error.message);
+      console.error("[EMI Update Error]", error);
+      toast.error("Failed to update loan. Please try again.");
     },
   });
 
@@ -81,7 +83,8 @@ export const useEMI = () => {
       toast.success("Loan deleted successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to delete loan: " + error.message);
+      console.error("[EMI Delete Error]", error);
+      toast.error("Failed to delete loan. Please try again.");
     },
   });
 
@@ -130,7 +133,8 @@ export const useEMI = () => {
       toast.success("Payment recorded successfully!");
     },
     onError: (error) => {
-      toast.error("Failed to record payment: " + error.message);
+      console.error("[EMI Payment Error]", error);
+      toast.error("Failed to record payment. Please try again.");
     },
   });
 

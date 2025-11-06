@@ -63,7 +63,8 @@ export const useCreateBankAccount = () => {
       toast.success("Bank account added successfully");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to add bank account: ${error.message}`);
+      console.error("[Bank Account Add Error]", error);
+      toast.error("Failed to add bank account. Please try again.");
     },
   });
 };
@@ -89,7 +90,8 @@ export const useUpdateBankAccount = () => {
       toast.success("Bank account updated successfully");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to update bank account: ${error.message}`);
+      console.error("[Bank Account Update Error]", error);
+      toast.error("Failed to update bank account. Please try again.");
     },
   });
 };
@@ -111,7 +113,8 @@ export const useDeleteBankAccount = () => {
       toast.success("Bank account deleted successfully");
     },
     onError: (error: Error) => {
-      toast.error(`Failed to delete bank account: ${error.message}`);
+      console.error("[Bank Account Delete Error]", error);
+      toast.error("Failed to delete bank account. Please try again.");
     },
   });
 };

@@ -30,7 +30,8 @@ const Reports = () => {
       exportToPDF(reportData, startDate, endDate);
       toast.success("Report exported as PDF");
     } catch (error) {
-      toast.error("Failed to export PDF");
+      console.error("[PDF Export Error]", error);
+      toast.error("Failed to export PDF. Please try again.");
     }
   };
 
@@ -40,7 +41,8 @@ const Reports = () => {
       exportToCSV(reportData, startDate, endDate);
       toast.success("Report exported as CSV");
     } catch (error) {
-      toast.error("Failed to export CSV");
+      console.error("[CSV Export Error]", error);
+      toast.error("Failed to export CSV. Please try again.");
     }
   };
 

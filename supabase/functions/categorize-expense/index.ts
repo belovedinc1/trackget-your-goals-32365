@@ -72,8 +72,8 @@ serve(async (req) => {
         );
       }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("AI categorization failed");
+      console.error("[AI Gateway Error]", response.status, errorText);
+      throw new Error("Categorization service unavailable");
     }
 
     const data = await response.json();
@@ -86,9 +86,9 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error in categorize-expense:", error);
+    console.error("[Categorize Expense Error]", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "Unable to categorize expense. Please try again." }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

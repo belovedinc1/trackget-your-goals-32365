@@ -30,7 +30,8 @@ export const AIRecommendations = ({ totalExpenses, totalSavings, goalsCount }: A
       if (error) throw error;
       setRecommendations(data.recommendations);
     } catch (error: any) {
-      toast.error("Failed to get recommendations: " + error.message);
+      console.error("[AI Recommendations Error]", error);
+      toast.error("Unable to get recommendations. Please try again.");
     } finally {
       setIsLoading(false);
     }

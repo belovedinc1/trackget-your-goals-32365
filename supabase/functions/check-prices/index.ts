@@ -3,15 +3,40 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-key",
 };
 
+/**
+ * ADMIN/CRON FUNCTION - Price Checker
+ * 
+ * This function uses SERVICE_ROLE_KEY to bypass RLS as it updates prices
+ * for all users' tracked products. It's designed to be called by:
+ * - Scheduled cron jobs
+ * - Admin webhooks with authentication
+ * 
+ * Security: Protected by custom admin key check
+ */
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Verify admin access via custom header
+    const adminKey = req.headers.get("x-admin-key");
+    const expectedKey = Deno.env.get("PRICE_CHECK_ADMIN_KEY");
+    
+    if (!adminKey || !expectedKey || adminKey !== expectedKey) {
+      console.warn("[Price Check] Unauthorized access attempt");
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
@@ -62,11 +87,13 @@ serve(async (req) => {
 
       // Check if price dropped below target
       if (product.target_price && roundedPrice <= Number(product.target_price)) {
-        console.log(`🎉 Price alert: ${product.product_name} dropped to ₹${roundedPrice}`);
+        console.log(`[Price Alert] ${product.product_name} dropped to $${roundedPrice}`);
         // In production, this would trigger a notification
         // For now, we just log it
       }
     }
+
+    console.log(`[Price Check] Successfully checked ${products?.length || 0} products`);
 
     return new Response(
       JSON.stringify({
@@ -79,9 +106,9 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error checking prices:", error);
+    console.error("[Price Check Error]", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
+      JSON.stringify({ error: "Price check operation failed" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

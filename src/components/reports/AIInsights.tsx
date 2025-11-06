@@ -26,8 +26,8 @@ const AIInsights = ({ reportData }: AIInsightsProps) => {
 
       setInsights(data.insights);
     } catch (error) {
-      console.error("Error generating insights:", error);
-      toast.error("Failed to generate AI insights");
+      console.error("[AI Insights Error]", error);
+      toast.error("Unable to generate insights. Please try again.");
     } finally {
       setIsLoading(false);
     }
