@@ -26,6 +26,7 @@ import AIAssistant from "./pages/AIAssistant";
 import Subscriptions from "./pages/Subscriptions";
 import BankAccounts from "./pages/BankAccounts";
 import VirtualCards from "./pages/VirtualCards";
+import FinanceHealth from "./pages/FinanceHealth";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -190,6 +191,16 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <VirtualCards />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finance-health"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <FinanceHealth />
                   </AppLayout>
                 </ProtectedRoute>
               }
