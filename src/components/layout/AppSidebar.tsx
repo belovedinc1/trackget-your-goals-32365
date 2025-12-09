@@ -12,7 +12,7 @@ import {
   RefreshCw,
   Wallet,
   Layers,
-  FileCheck
+  Heart
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import {
@@ -37,6 +37,7 @@ const mainItems = [
   { title: "Bank Accounts", url: "/bank-accounts", icon: Wallet },
   { title: "Virtual Cards", url: "/virtual-cards", icon: Layers },
   { title: "Price Tracking", url: "/price-tracking", icon: TrendingUp },
+  { title: "Finance Health", url: "/finance-health", icon: Heart },
   { title: "Reports", url: "/reports", icon: FileText },
 ];
 
