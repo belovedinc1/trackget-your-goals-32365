@@ -6,6 +6,7 @@ import {
   CreditCard as CreditCardIcon,
   TrendingUp,
   FileText,
+  HeartPulse,
   ArrowLeftRight,
   RefreshCw,
   Wallet,
@@ -24,7 +25,7 @@ const navItems = [
   { title: "Cards", url: "/virtual-cards", icon: Layers },
   { title: "Price", url: "/price-tracking", icon: TrendingUp },
   { title: "Reports", url: "/reports", icon: FileText },
-    { title: "Health", url: "/finance-health", icon: HeartPulse }, 
+  { title: "Health", url: "/finance-health", icon: HeartPulse }, 
 ];
 
 export function BottomNav() {
