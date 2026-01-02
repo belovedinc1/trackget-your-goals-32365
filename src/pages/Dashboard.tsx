@@ -9,6 +9,7 @@ import { useCurrency } from "@/hooks/useCurrency";
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { RecurringPaymentsWidget } from "@/components/dashboard/RecurringPaymentsWidget";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -207,6 +208,9 @@ const Dashboard = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Recurring Payments Widget */}
+        <RecurringPaymentsWidget />
       </div>
 
       {/* ✅ AI Insights */}
