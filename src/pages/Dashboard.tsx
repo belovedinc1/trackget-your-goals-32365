@@ -10,6 +10,8 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 import { RecurringPaymentsWidget } from "@/components/dashboard/RecurringPaymentsWidget";
+import { QuickActionsWidget } from "@/components/dashboard/QuickActionsWidget";
+import { ReceiptCameraButton } from "@/components/expenses/ReceiptCameraButton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -211,9 +213,13 @@ const Dashboard = () => {
 
         {/* Recurring Payments Widget */}
         <RecurringPaymentsWidget />
+        
+        {/* Quick Actions Widget */}
+        <QuickActionsWidget />
       </div>
 
-      {/* ✅ AI Insights */}
+      {/* Floating Receipt Camera Button */}
+      <ReceiptCameraButton variant="fab" />
       <Card className="border-accent/50 bg-accent/5">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
