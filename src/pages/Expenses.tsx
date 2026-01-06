@@ -5,10 +5,11 @@ import { Plus, TrendingDown, Receipt as ReceiptIcon } from "lucide-react";
 import { AddExpenseDialog } from "@/components/expenses/AddExpenseDialog";
 import { ExpenseFilters } from "@/components/expenses/ExpenseFilters";
 import { ExpenseList } from "@/components/expenses/ExpenseList";
+import { RecurringTemplatesList } from "@/components/expenses/RecurringTemplatesList";
+import { SMSExpenseParser } from "@/components/expenses/SMSExpenseParser";
 import { useExpenses, ExpenseFilters as FilterType } from "@/hooks/useExpenses";
 import { useCurrency } from "@/hooks/useCurrency";
 import { Skeleton } from "@/components/ui/skeleton";
-
 const Expenses = () => {
   const { formatAmount } = useCurrency();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -137,6 +138,12 @@ const Expenses = () => {
         onSortOrderChange={setSortOrder}
         onReset={handleResetFilters}
       />
+
+      {/* SMS Parser for Bank SMS */}
+      <SMSExpenseParser />
+
+      {/* Recurring Templates */}
+      <RecurringTemplatesList />
 
       {/* Expense List */}
       {isLoading ? (

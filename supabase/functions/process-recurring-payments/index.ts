@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface ProcessedItem {
-  type: "subscription" | "emi";
+  type: "subscription" | "emi" | "recurring_template";
   name: string;
   amount: number;
   userId: string;
@@ -197,19 +197,90 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ==================== PROCESS RECURRING EXPENSE TEMPLATES ====================
+    const todayDate = new Date();
+    const currentDay = todayDate.getDate();
+    
+    console.log(`[Process Recurring] Checking recurring templates for day: ${currentDay}`);
+
+    const { data: dueTemplates, error: templateError } = await supabase
+      .from("recurring_expense_templates")
+      .select("*")
+      .eq("is_active", true)
+      .eq("schedule_day", currentDay);
+
+    if (templateError) {
+      console.error("[Process Recurring] Error fetching recurring templates:", templateError);
+    } else {
+      console.log(`[Process Recurring] Found ${dueTemplates?.length || 0} templates scheduled for today`);
+
+      for (const template of dueTemplates || []) {
+        try {
+          // Check if already processed today
+          const todayStr = format(todayDate, "yyyy-MM-dd");
+          if (template.last_processed_at) {
+            const lastProcessed = format(parseISO(template.last_processed_at), "yyyy-MM-dd");
+            if (lastProcessed === todayStr) {
+              console.log(`[Process Recurring] Template ${template.name} already processed today, skipping`);
+              continue;
+            }
+          }
+
+          // Create expense record
+          const { error: expenseError } = await supabase.from("expenses").insert({
+            user_id: template.user_id,
+            amount: template.amount,
+            category: template.category,
+            description: template.description || template.name,
+            expense_date: todayStr,
+            type: "expense",
+          });
+
+          if (expenseError) {
+            console.error(`[Process Recurring] Error creating expense for template ${template.id}:`, expenseError);
+            continue;
+          }
+
+          // Update last_processed_at
+          const { error: updateError } = await supabase
+            .from("recurring_expense_templates")
+            .update({ last_processed_at: new Date().toISOString() })
+            .eq("id", template.id);
+
+          if (updateError) {
+            console.error(`[Process Recurring] Error updating template ${template.id}:`, updateError);
+            continue;
+          }
+
+          processedItems.push({
+            type: "recurring_template",
+            name: template.name,
+            amount: template.amount,
+            userId: template.user_id,
+          });
+
+          console.log(`[Process Recurring] Processed recurring template: ${template.name} for user ${template.user_id}`);
+        } catch (err) {
+          console.error(`[Process Recurring] Error processing template ${template.id}:`, err);
+        }
+      }
+    }
+
     // Group processed items by user for notification summary
     const userSummary = processedItems.reduce((acc, item) => {
       if (!acc[item.userId]) {
-        acc[item.userId] = { subscriptions: [], emis: [], total: 0 };
+        acc[item.userId] = { subscriptions: [], emis: [], templates: [], total: 0 };
       }
       if (item.type === "subscription") {
         acc[item.userId].subscriptions.push(item.name);
-      } else {
+      } else if (item.type === "emi") {
         acc[item.userId].emis.push(item.name);
+      } else {
+        acc[item.userId].templates.push(item.name);
       }
       acc[item.userId].total += item.amount;
       return acc;
-    }, {} as Record<string, { subscriptions: string[]; emis: string[]; total: number }>);
+    }, {} as Record<string, { subscriptions: string[]; emis: string[]; templates: string[]; total: number }>);
 
     console.log(`[Process Recurring] Completed. Processed ${processedItems.length} items for ${Object.keys(userSummary).length} users`);
 
@@ -219,6 +290,7 @@ Deno.serve(async (req) => {
         processed: processedItems.length,
         subscriptions: processedItems.filter(i => i.type === "subscription").length,
         emis: processedItems.filter(i => i.type === "emi").length,
+        templates: processedItems.filter(i => i.type === "recurring_template").length,
         userSummary,
       }),
       {
