@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 import { RecurringPaymentsWidget } from "@/components/dashboard/RecurringPaymentsWidget";
 import { QuickActionsWidget } from "@/components/dashboard/QuickActionsWidget";
+import { BudgetAlertsWidget } from "@/components/dashboard/BudgetAlertsWidget";
 import { ReceiptCameraButton } from "@/components/expenses/ReceiptCameraButton";
 
 const Dashboard = () => {
@@ -213,6 +214,9 @@ const Dashboard = () => {
 
         {/* Recurring Payments Widget */}
         <RecurringPaymentsWidget />
+        
+        {/* Budget Alerts Widget */}
+        <BudgetAlertsWidget />
         
         {/* Quick Actions Widget */}
         <QuickActionsWidget />

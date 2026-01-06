@@ -10,7 +10,7 @@ import { Download } from "lucide-react";
 import { useUserPreferences, useUpdateUserPreferences } from "@/hooks/useUserPreferences";
 import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/hooks/useAuth";
-import { BudgetSettings } from "@/components/settings/BudgetSettings";
+import { BudgetLimitsManager } from "@/components/settings/BudgetLimitsManager";
 import { SecuritySettings } from "@/components/settings/SecuritySettings";
 import { useToast } from "@/hooks/use-toast";
 import { useExpenses } from "@/hooks/useExpenses";
@@ -239,8 +239,8 @@ const Settings = () => {
         </CardContent>
       </Card>
 
-      {/* Budget Settings */}
-      <BudgetSettings />
+      {/* Budget Limits Manager */}
+      <BudgetLimitsManager />
 
       {/* Security Settings */}
       <SecuritySettings />
