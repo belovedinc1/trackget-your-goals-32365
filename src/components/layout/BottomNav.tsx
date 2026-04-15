@@ -13,6 +13,8 @@ import {
   Wallet,
   Layers,
   MoreHorizontal,
+  CalendarHeart,
+  LineChart,
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -54,6 +56,8 @@ const navGroups = [
     items: [
       { title: "Price Tracking", url: "/price-tracking", icon: TrendingUp },
       { title: "Finance Health", url: "/finance-health", icon: HeartPulse },
+      { title: "Heatmap", url: "/spending-heatmap", icon: CalendarHeart },
+      { title: "Cash Flow", url: "/cash-flow", icon: LineChart },
     ],
   },
 ];
