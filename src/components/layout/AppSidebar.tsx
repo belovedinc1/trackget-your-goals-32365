@@ -13,7 +13,9 @@ import {
   Wallet,
   Layers,
   Heart,
-  ChevronDown
+  ChevronDown,
+  CalendarHeart,
+  LineChart,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -63,6 +65,8 @@ const navGroups = [
     items: [
       { title: "Price Tracking", url: "/price-tracking", icon: TrendingUp },
       { title: "Finance Health", url: "/finance-health", icon: Heart },
+      { title: "Spending Heatmap", url: "/spending-heatmap", icon: CalendarHeart },
+      { title: "Cash Flow", url: "/cash-flow", icon: LineChart },
       { title: "Reports", url: "/reports", icon: FileText },
     ],
   },

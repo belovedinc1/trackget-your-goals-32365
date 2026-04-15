@@ -27,6 +27,8 @@ import Subscriptions from "./pages/Subscriptions";
 import BankAccounts from "./pages/BankAccounts";
 import VirtualCards from "./pages/VirtualCards";
 import FinanceHealth from "./pages/FinanceHealth";
+import SpendingHeatmap from "./pages/SpendingHeatmap";
+import CashFlowForecast from "./pages/CashFlowForecast";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -201,6 +203,26 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <FinanceHealth />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/spending-heatmap"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <SpendingHeatmap />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/cash-flow"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <CashFlowForecast />
                   </AppLayout>
                 </ProtectedRoute>
               }
