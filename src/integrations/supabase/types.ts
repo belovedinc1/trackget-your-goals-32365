@@ -296,6 +296,51 @@ export type Database = {
           },
         ]
       }
+      investments: {
+        Row: {
+          asset_name: string
+          asset_type: string
+          buy_date: string
+          buy_price: number
+          created_at: string
+          current_price: number
+          id: string
+          notes: string | null
+          platform: string | null
+          quantity: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_name: string
+          asset_type?: string
+          buy_date?: string
+          buy_price: number
+          created_at?: string
+          current_price: number
+          id?: string
+          notes?: string | null
+          platform?: string | null
+          quantity?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_name?: string
+          asset_type?: string
+          buy_date?: string
+          buy_price?: number
+          created_at?: string
+          current_price?: number
+          id?: string
+          notes?: string | null
+          platform?: string | null
+          quantity?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           client_address: string | null
@@ -352,6 +397,54 @@ export type Database = {
           tax_percentage?: number
           total?: number
           updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      monthly_challenges: {
+        Row: {
+          challenge_type: string
+          created_at: string
+          current_value: number
+          description: string | null
+          end_date: string
+          id: string
+          reward_points: number
+          start_date: string
+          status: string
+          target_value: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_type?: string
+          created_at?: string
+          current_value?: number
+          description?: string | null
+          end_date: string
+          id?: string
+          reward_points?: number
+          start_date?: string
+          status?: string
+          target_value: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_type?: string
+          created_at?: string
+          current_value?: number
+          description?: string | null
+          end_date?: string
+          id?: string
+          reward_points?: number
+          start_date?: string
+          status?: string
+          target_value?: number
+          title?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -524,6 +617,80 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      split_expense_participants: {
+        Row: {
+          created_at: string
+          id: string
+          is_settled: boolean
+          participant_email: string | null
+          participant_name: string
+          settled_at: string | null
+          share_amount: number
+          split_expense_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_settled?: boolean
+          participant_email?: string | null
+          participant_name: string
+          settled_at?: string | null
+          share_amount: number
+          split_expense_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_settled?: boolean
+          participant_email?: string | null
+          participant_name?: string
+          settled_at?: string | null
+          share_amount?: number
+          split_expense_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "split_expense_participants_split_expense_id_fkey"
+            columns: ["split_expense_id"]
+            isOneToOne: false
+            referencedRelation: "split_expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      split_expenses: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          notes: string | null
+          title: string
+          total_amount: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          title: string
+          total_amount: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          title?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
