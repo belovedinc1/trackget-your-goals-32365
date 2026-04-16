@@ -29,6 +29,10 @@ import VirtualCards from "./pages/VirtualCards";
 import FinanceHealth from "./pages/FinanceHealth";
 import SpendingHeatmap from "./pages/SpendingHeatmap";
 import CashFlowForecast from "./pages/CashFlowForecast";
+import SplitExpenses from "./pages/SplitExpenses";
+import Investments from "./pages/Investments";
+import BankStatementImport from "./pages/BankStatementImport";
+import Challenges from "./pages/Challenges";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
@@ -223,6 +227,46 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <CashFlowForecast />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/split-expenses"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <SplitExpenses />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/investments"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Investments />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/bank-import"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <BankStatementImport />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/challenges"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Challenges />
                   </AppLayout>
                 </ProtectedRoute>
               }
