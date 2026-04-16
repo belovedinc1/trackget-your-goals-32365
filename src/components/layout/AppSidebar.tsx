@@ -16,6 +16,10 @@ import {
   ChevronDown,
   CalendarHeart,
   LineChart,
+  Users,
+  BarChart3,
+  Upload,
+  Trophy,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -51,6 +55,8 @@ const navGroups = [
       { title: "Savings", url: "/savings", icon: PiggyBank },
       { title: "Bank Accounts", url: "/bank-accounts", icon: Wallet },
       { title: "Virtual Cards", url: "/virtual-cards", icon: Layers },
+      { title: "Split Expenses", url: "/split-expenses", icon: Users },
+      { title: "Investments", url: "/investments", icon: BarChart3 },
     ],
   },
   {
@@ -67,6 +73,8 @@ const navGroups = [
       { title: "Finance Health", url: "/finance-health", icon: Heart },
       { title: "Spending Heatmap", url: "/spending-heatmap", icon: CalendarHeart },
       { title: "Cash Flow", url: "/cash-flow", icon: LineChart },
+      { title: "Bank Import", url: "/bank-import", icon: Upload },
+      { title: "Challenges", url: "/challenges", icon: Trophy },
       { title: "Reports", url: "/reports", icon: FileText },
     ],
   },
