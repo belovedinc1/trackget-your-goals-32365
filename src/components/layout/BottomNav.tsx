@@ -16,6 +16,10 @@ import {
   CalendarHeart,
   LineChart,
   X,
+  Users,
+  BarChart3,
+  Upload,
+  Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -42,6 +46,8 @@ const navGroups = [
       { title: "Transactions", url: "/transactions", icon: ArrowLeftRight },
       { title: "Bank Accounts", url: "/bank-accounts", icon: Wallet },
       { title: "Virtual Cards", url: "/virtual-cards", icon: Layers },
+      { title: "Split Expenses", url: "/split-expenses", icon: Users },
+      { title: "Investments", url: "/investments", icon: BarChart3 },
     ],
   },
   {
@@ -58,6 +64,8 @@ const navGroups = [
       { title: "Finance Health", url: "/finance-health", icon: HeartPulse },
       { title: "Heatmap", url: "/spending-heatmap", icon: CalendarHeart },
       { title: "Cash Flow", url: "/cash-flow", icon: LineChart },
+      { title: "Bank Import", url: "/bank-import", icon: Upload },
+      { title: "Challenges", url: "/challenges", icon: Trophy },
     ],
   },
 ];
