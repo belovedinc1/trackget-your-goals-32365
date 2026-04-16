@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { Capacitor } from "@capacitor/core";
+import { CapacitorAudioRecorder } from "@capgo/capacitor-audio-recorder";
 
 interface VoiceExpenseInputProps {
   onExpenseAdded?: () => void;
@@ -21,6 +23,14 @@ export function VoiceExpenseInput({ onExpenseAdded }: VoiceExpenseInputProps) {
 
   const startRecording = async () => {
     try {
+      if (Capacitor.isNativePlatform()) {
+        const permissions = await CapacitorAudioRecorder.requestPermissions();
+        if (permissions.recordAudio !== "granted") {
+          toast.error("Microphone permission is required to record expenses.");
+          return;
+        }
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       mediaRecorderRef.current = mediaRecorder;

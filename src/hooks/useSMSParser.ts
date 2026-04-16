@@ -89,7 +89,80 @@ function getCategoryFromMerchant(merchant?: string): string {
   return MERCHANT_CATEGORIES[lowerMerchant] || "Other";
 }
 
+function extractFlexibleAmount(sms: string): { amount: number; type: "expense" | "income" } | null {
+  const debitKeywords = /debited|withdrawn|spent|paid|deducted|debit|sent|trf to|transfer to/i;
+  const creditKeywords = /credited|received|deposited|credit|refund|cashback|salary/i;
+  const contextualAmount = sms.match(
+    /(?:debited|withdrawn|spent|paid|deducted|credited|received|deposited)\s*(?:by|with|for|of)?\s*(?:rs\.?|inr|₹|â‚¹)?\s*(\d+(?:,\d+)*(?:\.\d{1,2})?)/i
+  );
+  const currencyAmount = sms.match(/(?:rs\.?|inr|₹|â‚¹)\s*(\d+(?:,\d+)*(?:\.\d{1,2})?)/i);
+  const amount = Number((contextualAmount?.[1] || currencyAmount?.[1] || "").replace(/,/g, ""));
+
+  if (!amount || amount <= 0) return null;
+
+  const type = creditKeywords.test(sms) && !debitKeywords.test(sms) ? "income" : "expense";
+  return { amount, type };
+}
+
+function extractFlexibleMerchant(sms: string): string | undefined {
+  const patterns = [
+    /(?:trf|transfer|sent|paid)\s+to\s+([a-z0-9 .&'-]+?)(?=\s+(?:ref|refno|reference|on|if|upi|a\/c|ac\b)|$)/i,
+    /(?:at|@|to)\s+([a-z0-9 .&'-]+?)(?=\s+(?:ref|refno|reference|on|if|upi|a\/c|ac\b)|$)/i,
+    /(?:from|by)\s+([a-z0-9 .&'-]+?)(?=\s+(?:ref|refno|reference|on|if|upi|a\/c|ac\b)|$)/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = sms.match(pattern);
+    const value = match?.[1]?.trim();
+    if (value && !/^\d/.test(value)) return value;
+  }
+
+  return extractMerchant(sms);
+}
+
+function parseFlexibleDate(sms: string): string {
+  const patterns = [
+    /(?:on\s+date|date|on)\s+(\d{1,2}[A-Za-z]{3}\d{2,4})/i,
+    /(?:on\s+date|date|on)\s+(\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/i,
+    /(\d{1,2}[A-Za-z]{3}\d{2,4})/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = sms.match(pattern);
+    if (!match) continue;
+
+    const compact = match[1].match(/^(\d{1,2})([A-Za-z]{3})(\d{2,4})$/);
+    if (compact) {
+      const [, day, month, year] = compact;
+      const parsed = new Date(`${day} ${month} ${year.length === 2 ? `20${year}` : year}`);
+      if (!isNaN(parsed.getTime())) return format(parsed, "yyyy-MM-dd");
+    }
+
+    const parsed = new Date(match[1].replace(/-/g, "/"));
+    if (!isNaN(parsed.getTime())) return format(parsed, "yyyy-MM-dd");
+  }
+
+  return format(new Date(), "yyyy-MM-dd");
+}
+
 export function parseBankSMS(sms: string): ParsedTransaction | null {
+  const flexible = extractFlexibleAmount(sms);
+  if (flexible) {
+    const merchant = extractFlexibleMerchant(sms);
+    const category = getCategoryFromMerchant(merchant);
+
+    return {
+      amount: flexible.amount,
+      type: flexible.type,
+      description: merchant
+        ? `${flexible.type === "expense" ? "Payment to" : "Received from"} ${merchant}`
+        : `Bank ${flexible.type === "expense" ? "debit" : "credit"}`,
+      category,
+      merchant,
+      date: parseFlexibleDate(sms),
+    };
+  }
+
   for (const { pattern, type } of SMS_PATTERNS) {
     const match = sms.match(pattern);
     if (match) {

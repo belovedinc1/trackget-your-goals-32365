@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Trackget</string>
+    <string name="title_activity_main">Trackget</string>
+    <string name="package_name">app.lovable.d816cec9c6bb499cae471f829d963330</string>
+    <string name="custom_url_scheme">app.lovable.d816cec9c6bb499cae471f829d963330</string>
+</resources>

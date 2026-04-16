@@ -53,7 +53,23 @@ const Register = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/90 px-6 text-white backdrop-blur-xl">
+          <div className="max-w-sm text-center">
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-[2rem] bg-gradient-to-br from-primary to-secondary shadow-2xl shadow-primary/30">
+              <Wallet className="h-10 w-10" />
+            </div>
+            <h2 className="mt-6 text-2xl font-black">Creating your secure workspace</h2>
+            <p className="mt-3 text-sm leading-6 text-white/70">
+              Setting up your Trackget account, budgets, and mobile dashboard.
+            </p>
+            <div className="mx-auto mt-6 h-2 max-w-56 overflow-hidden rounded-full bg-white/10">
+              <div className="h-full w-1/2 animate-pulse rounded-full bg-gradient-to-r from-accent to-secondary" />
+            </div>
+          </div>
+        </div>
+      )}
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-4 text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-primary">

@@ -34,6 +34,7 @@ import Investments from "./pages/Investments";
 import BankStatementImport from "./pages/BankStatementImport";
 import Challenges from "./pages/Challenges";
 import Install from "./pages/Install";
+import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -267,6 +268,16 @@ const App = () => (
                 <ProtectedRoute>
                   <AppLayout>
                     <Challenges />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/support"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Support />
                   </AppLayout>
                 </ProtectedRoute>
               }

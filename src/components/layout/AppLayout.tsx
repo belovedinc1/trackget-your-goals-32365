@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useProfile } from "@/hooks/useProfile";
 import { Button } from "@/components/ui/button";
 import { BottomNav } from "./BottomNav";
-import { Settings, LogOut, User } from "lucide-react";
+import { Bell, LogOut, Settings, User, WalletCards } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -22,6 +22,32 @@ export function AppLayout({ children }: AppLayoutProps) {
   const { user, signOut } = useAuth();
   const { data: profile } = useProfile();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const pageTitles: Record<string, string> = {
+    "/dashboard": "Overview",
+    "/expenses": "Expenses",
+    "/transactions": "Transactions",
+    "/savings": "Savings",
+    "/emi": "EMI & Loans",
+    "/reports": "Reports",
+    "/settings": "Settings",
+    "/profile": "Profile",
+    "/ai-assistant": "AI Assistant",
+    "/subscriptions": "Subscriptions",
+    "/bank-accounts": "Accounts",
+    "/virtual-cards": "Cards",
+    "/finance-health": "Health",
+    "/spending-heatmap": "Heatmap",
+    "/cash-flow": "Cash Flow",
+    "/split-expenses": "Split",
+    "/investments": "Investments",
+    "/bank-import": "Import",
+    "/challenges": "Challenges",
+    "/support": "Support",
+  };
+
+  const pageTitle = pageTitles[location.pathname] || "Trackget";
 
   const handleSignOut = async () => {
     await signOut();
@@ -33,14 +59,43 @@ export function AppLayout({ children }: AppLayoutProps) {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center gap-4 px-4">
+    <div className="min-h-screen w-full overflow-x-hidden">
+      <header className="safe-top sticky top-0 z-40 border-b border-white/60 bg-background/80 backdrop-blur-2xl supports-[backdrop-filter]:bg-background/65">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard")}
+            className="flex min-w-0 items-center gap-3 text-left"
+            aria-label="Go to dashboard"
+          >
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-primary via-primary-light to-secondary text-primary-foreground shadow-lg shadow-primary/20">
+              <WalletCards className="h-5 w-5" />
+            </span>
+            <span className="min-w-0">
+              <span className="block text-[11px] font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+                Trackget
+              </span>
+              <span className="block truncate text-lg font-black leading-tight text-foreground">
+                {pageTitle}
+              </span>
+            </span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full bg-white/60 shadow-sm backdrop-blur dark:bg-white/10"
+              onClick={() => navigate("/finance-health")}
+              aria-label="Open finance health"
+            >
+              <Bell className="h-4 w-4" />
+            </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="relative h-10 w-10 rounded-full hover:scale-110 transition-transform duration-300"
+                className="relative h-10 w-10 rounded-full bg-white/60 p-0 shadow-sm transition-transform duration-300 hover:scale-105 dark:bg-white/10"
               >
                 <Avatar className="h-10 w-10 border-2 border-primary">
                   <AvatarImage src={profile?.avatar_url || undefined} alt="Profile" />
@@ -73,10 +128,11 @@ export function AppLayout({ children }: AppLayoutProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          </div>
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-20">
+      <main className="relative">
         {children}
       </main>
 

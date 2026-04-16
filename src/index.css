@@ -26,7 +26,7 @@ All colors MUST be HSL.
     --accent-foreground: 217 33% 17%;
     
     /* Cool Gray - Background */
-    --background: 214 32% 96%;
+    --background: 206 46% 96%;
     --foreground: 217 33% 17%;
     
     /* Card and Surface Colors */
@@ -37,7 +37,7 @@ All colors MUST be HSL.
     --popover-foreground: 217 33% 17%;
     
     /* Muted Colors */
-    --muted: 214 32% 92%;
+    --muted: 206 36% 91%;
     --muted-foreground: 217 20% 50%;
     
     /* Destructive (Errors) */
@@ -58,7 +58,7 @@ All colors MUST be HSL.
     --ring: 221 64% 33%;
     
     /* Border Radius */
-    --radius: 0.5rem;
+    --radius: 1.25rem;
     
     /* Sidebar */
     --sidebar-background: 221 64% 33%;
@@ -137,6 +137,45 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    background:
+      radial-gradient(circle at 15% 0%, hsl(var(--accent) / 0.2), transparent 28rem),
+      radial-gradient(circle at 95% 10%, hsl(var(--secondary) / 0.18), transparent 24rem),
+      linear-gradient(180deg, hsl(206 55% 98%) 0%, hsl(var(--background)) 38%, hsl(210 40% 93%) 100%);
+    min-height: 100vh;
+    overscroll-behavior-y: none;
+  }
+
+  .dark body {
+    background:
+      radial-gradient(circle at 15% 0%, hsl(var(--accent) / 0.12), transparent 26rem),
+      radial-gradient(circle at 95% 10%, hsl(var(--secondary) / 0.14), transparent 24rem),
+      linear-gradient(180deg, hsl(217 33% 10%) 0%, hsl(var(--background)) 48%, hsl(222 36% 8%) 100%);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .mobile-page {
+    @apply mx-auto w-full max-w-6xl space-y-6 px-4 pb-28 pt-5 sm:px-6 sm:py-8 lg:px-8;
+  }
+
+  .app-card {
+    @apply border-white/70 bg-card/90 shadow-[0_18px_60px_-38px_hsl(var(--primary))] backdrop-blur-xl;
+  }
+
+  .glass-panel {
+    @apply border border-white/60 bg-white/70 shadow-[0_20px_80px_-45px_hsl(var(--primary))] backdrop-blur-2xl dark:border-white/10 dark:bg-card/70;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
   }
 }

@@ -19,7 +19,7 @@ export function BudgetAlertsWidget() {
   const hasAlerts = alertsToShow.length > 0;
 
   return (
-    <Card className={hasAlerts ? "border-warning/50" : ""}>
+    <Card className={hasAlerts ? "app-card border-warning/50" : "app-card"}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
           {hasAlerts ? (

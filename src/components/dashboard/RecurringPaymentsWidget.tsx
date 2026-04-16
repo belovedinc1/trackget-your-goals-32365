@@ -50,7 +50,7 @@ export function RecurringPaymentsWidget() {
   ].reduce((sum, a) => sum + a, 0);
 
   return (
-    <Card>
+    <Card className="app-card">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">Recurring Payments</CardTitle>
         <Button
@@ -65,7 +65,7 @@ export function RecurringPaymentsWidget() {
       </CardHeader>
       <CardContent className="space-y-4">
         {totalDue > 0 ? (
-          <div className="flex items-center justify-between p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+          <div className="flex items-center justify-between rounded-2xl border border-destructive/20 bg-destructive/10 p-3">
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-destructive" />
               <div>
@@ -86,7 +86,7 @@ export function RecurringPaymentsWidget() {
             </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20">
+          <div className="flex items-center gap-2 rounded-2xl border border-primary/20 bg-primary/10 p-3">
             <CheckCircle2 className="h-4 w-4 text-primary" />
             <p className="text-sm">All payments up to date</p>
           </div>

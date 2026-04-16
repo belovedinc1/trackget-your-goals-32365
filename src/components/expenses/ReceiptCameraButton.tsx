@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera as CameraIcon, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScanReceipt } from "@/hooks/useScanReceipt";
 import { useCreateExpense } from "@/hooks/useExpenses";
@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { Capacitor } from "@capacitor/core";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 interface ReceiptCameraButtonProps {
   onExpenseAdded?: () => void;
@@ -30,8 +32,7 @@ export function ReceiptCameraButton({ onExpenseAdded, variant = "default" }: Rec
     data: { amount: number; category: string; description: string; date: string } | null;
   }>({ open: false, data: null });
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const processReceiptFile = async (file: File) => {
     if (!file) return;
 
     try {
@@ -52,6 +53,13 @@ export function ReceiptCameraButton({ onExpenseAdded, variant = "default" }: Rec
       console.error("Error scanning receipt:", error);
       toast.error("Failed to scan receipt");
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    await processReceiptFile(file);
 
     // Reset input
     if (fileInputRef.current) {
@@ -81,8 +89,42 @@ export function ReceiptCameraButton({ onExpenseAdded, variant = "default" }: Rec
     }
   };
 
-  const handleClick = () => {
-    fileInputRef.current?.click();
+  const handleClick = async () => {
+    if (!Capacitor.isNativePlatform()) {
+      fileInputRef.current?.click();
+      return;
+    }
+
+    try {
+      const permissions = await Camera.requestPermissions({ permissions: ["camera"] });
+      if (permissions.camera !== "granted") {
+        toast.error("Camera permission is required to scan receipts.");
+        return;
+      }
+
+      const photo = await Camera.getPhoto({
+        quality: 85,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Camera,
+        correctOrientation: true,
+      });
+
+      if (!photo.webPath) {
+        toast.error("Could not read captured receipt image.");
+        return;
+      }
+
+      const response = await fetch(photo.webPath);
+      const blob = await response.blob();
+      const file = new File([blob], `receipt-${Date.now()}.${photo.format || "jpg"}`, {
+        type: blob.type || "image/jpeg",
+      });
+
+      await processReceiptFile(file);
+    } catch (error) {
+      console.error("Error opening camera:", error);
+      toast.error("Could not open camera. Please check permissions.");
+    }
   };
 
   if (variant === "fab") {
@@ -108,7 +150,7 @@ export function ReceiptCameraButton({ onExpenseAdded, variant = "default" }: Rec
           {scanReceiptMutation.isPending ? (
             <Loader2 className="h-6 w-6 animate-spin" />
           ) : (
-            <Camera className="h-6 w-6" />
+            <CameraIcon className="h-6 w-6" />
           )}
         </Button>
 
@@ -180,7 +222,7 @@ export function ReceiptCameraButton({ onExpenseAdded, variant = "default" }: Rec
         {scanReceiptMutation.isPending ? (
           <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          <Camera className="h-5 w-5" />
+          <CameraIcon className="h-5 w-5" />
         )}
         <span className="text-xs">Scan Receipt</span>
       </Button>

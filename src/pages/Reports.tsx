@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, FileDown, Calendar } from "lucide-react";
+import { Download, FileDown, Calendar, BarChart3 } from "lucide-react";
 import { useState } from "react";
 import { useReportData } from "@/hooks/useReportData";
 import { startOfMonth, endOfMonth, subMonths } from "date-fns";
@@ -47,16 +47,19 @@ const Reports = () => {
   };
 
   return (
-    <div className="container py-8 space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div className="mobile-page">
+      <div className="glass-panel relative overflow-hidden rounded-[2rem] p-5 sm:p-8">
+        <div className="absolute -right-16 -top-20 h-52 w-52 rounded-full bg-accent/20 blur-3xl" />
+        <div className="relative flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Financial Reports</h1>
-          <p className="text-muted-foreground">Comprehensive analysis and insights</p>
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">Insights</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-5xl">Financial Reports</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Comprehensive analysis and exports built for quick mobile review.</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2 sm:grid-cols-3 md:max-w-xl">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="justify-start text-left font-normal">
+              <Button variant="outline" className="h-12 justify-start rounded-2xl bg-white/60 text-left text-xs font-medium sm:col-span-3">
                 <Calendar className="mr-2 h-4 w-4" />
                 {format(startDate, "MMM dd, yyyy")} - {format(endDate, "MMM dd, yyyy")}
               </Button>
@@ -83,14 +86,19 @@ const Reports = () => {
               </div>
             </PopoverContent>
           </Popover>
-          <Button onClick={handleExportPDF} variant="outline">
+          <Button onClick={handleExportPDF} variant="outline" className="h-12 rounded-2xl bg-white/60">
             <FileDown className="mr-2 h-4 w-4" />
-            Export PDF
+            PDF
           </Button>
-          <Button onClick={handleExportCSV} variant="outline">
+          <Button onClick={handleExportCSV} variant="outline" className="h-12 rounded-2xl bg-white/60">
             <Download className="mr-2 h-4 w-4" />
-            Export CSV
+            CSV
           </Button>
+          <Button variant="default" className="h-12 rounded-2xl" disabled>
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Live
+          </Button>
+        </div>
         </div>
       </div>
 
@@ -105,7 +113,7 @@ const Reports = () => {
       ) : reportData ? (
         <>
           <div className="grid gap-4 md:grid-cols-3">
-            <Card>
+            <Card className="app-card">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Expenses</CardTitle>
               </CardHeader>
@@ -113,7 +121,7 @@ const Reports = () => {
                 <div className="text-2xl font-bold">{formatAmount(reportData.expenses.total)}</div>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="app-card">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">Total Savings</CardTitle>
               </CardHeader>
@@ -124,7 +132,7 @@ const Reports = () => {
                 </p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="app-card">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">EMI Outstanding</CardTitle>
               </CardHeader>
@@ -147,7 +155,7 @@ const Reports = () => {
           <AIInsights reportData={reportData} />
         </>
       ) : (
-        <Card>
+        <Card className="app-card">
           <CardContent className="py-8 text-center text-muted-foreground">
             No data available for the selected period
           </CardContent>

@@ -2,11 +2,17 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.d816cec9c6bb499cae471f829d963330',
-  appName: 'trackget-your-goals-32365',
+  appName: 'Trackget',
   webDir: 'dist',
-  server: {
-    url: 'https://d816cec9-c6bb-499c-ae47-1f829d963330.lovableproject.com?forceHideBadge=true',
-    cleartext: true
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 1800,
+      launchAutoHide: true,
+      backgroundColor: '#0f2f6e',
+      androidSplashResourceName: 'splash',
+      androidScaleType: 'CENTER_CROP',
+      showSpinner: false
+    }
   }
 };
 

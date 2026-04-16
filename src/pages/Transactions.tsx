@@ -30,26 +30,27 @@ const Transactions = () => {
 }, [expenses]);
   
   return (
-    <div className="container py-8 space-y-8">
-      <div className="flex items-center justify-between">
+    <div className="mobile-page">
+      <div className="glass-panel relative overflow-hidden rounded-[2rem] p-5 sm:p-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Transactions</h1>
-          <p className="text-muted-foreground">Track all your income and expenses</p>
+          <p className="text-xs font-bold uppercase tracking-[0.22em] text-muted-foreground">Money movement</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-5xl">Transactions</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">Track all your income and expenses in one mobile-friendly timeline.</p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setIncomeDialogOpen(true)} variant="outline">
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <Button onClick={() => setIncomeDialogOpen(true)} variant="outline" className="h-12 rounded-2xl bg-white/60">
             <Plus className="h-4 w-4 mr-2" />
-            Add Income
+            Income
           </Button>
-          <Button onClick={() => setExpenseDialogOpen(true)}>
+          <Button onClick={() => setExpenseDialogOpen(true)} className="h-12 rounded-2xl">
             <Plus className="h-4 w-4 mr-2" />
-            Add Expense
+            Expense
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card className="app-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Income</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -62,7 +63,7 @@ const Transactions = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="app-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
             <TrendingDown className="h-4 w-4 text-muted-foreground" />
@@ -75,7 +76,7 @@ const Transactions = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="app-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Net Balance</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -89,36 +90,36 @@ const Transactions = () => {
         </Card>
       </div>
 
-      <Card>
+      <Card className="app-card">
         <CardHeader>
-          <CardTitle>All Transactions</CardTitle>
+          <CardTitle className="text-2xl font-black">All Transactions</CardTitle>
           <CardDescription>Your complete transaction history</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-8 text-muted-foreground">Loading transactions...</div>
           ) : expenses && expenses.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {expenses.map((transaction) => (
-                <div key={transaction.id} className="flex items-center justify-between border-b pb-4 last:border-0">
-                  <div className="flex items-center gap-4">
-                    <div className={`h-10 w-10 rounded-full flex items-center justify-center ${
+                <div key={transaction.id} className="flex items-center justify-between gap-3 rounded-3xl bg-muted/50 p-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
                       transaction.type === "expense" ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
                     }`}>
                       {transaction.type === "expense" ? <TrendingDown className="h-5 w-5" /> : <TrendingUp className="h-5 w-5" />}
                     </div>
-                    <div>
-                      <p className="font-medium">{transaction.description || (transaction.type === "income" ? "Income" : "Expense")}</p>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold">{transaction.description || (transaction.type === "income" ? "Income" : "Expense")}</p>
+                      <p className="text-xs text-muted-foreground">
                         {format(new Date(transaction.expense_date), "MMM dd, yyyy")}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className={`font-semibold ${transaction.type === "expense" ? 'text-red-600' : 'text-green-600'}`}>
+                  <div className="shrink-0 text-right">
+                    <p className={`text-sm font-black ${transaction.type === "expense" ? 'text-red-600' : 'text-green-600'}`}>
                       {transaction.type === "income" ? '+' : '-'}{formatAmount(transaction.amount)}
                     </p>
-                    <Badge variant="outline" className="mt-1">{transaction.category}</Badge>
+                    <Badge variant="outline" className="mt-1 max-w-24 truncate text-[10px]">{transaction.category}</Badge>
                   </div>
                 </div>
               ))}
@@ -126,11 +127,11 @@ const Transactions = () => {
           ) : (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">No transactions yet</p>
-              <div className="flex gap-2 justify-center">
-                <Button onClick={() => setIncomeDialogOpen(true)} variant="outline">
+              <div className="grid grid-cols-2 gap-2">
+                <Button onClick={() => setIncomeDialogOpen(true)} variant="outline" className="rounded-2xl">
                   Add Income
                 </Button>
-                <Button onClick={() => setExpenseDialogOpen(true)}>
+                <Button onClick={() => setExpenseDialogOpen(true)} className="rounded-2xl">
                   Add Expense
                 </Button>
               </div>
