@@ -254,6 +254,7 @@ export type Database = {
           created_at: string
           description: string | null
           expense_date: string
+          household_id: string | null
           id: string
           receipt_url: string | null
           type: string | null
@@ -267,6 +268,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           expense_date?: string
+          household_id?: string | null
           id?: string
           receipt_url?: string | null
           type?: string | null
@@ -280,6 +282,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           expense_date?: string
+          household_id?: string | null
           id?: string
           receipt_url?: string | null
           type?: string | null
@@ -294,7 +297,114 @@ export type Database = {
             referencedRelation: "bank_accounts"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "expenses_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      household_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          household_id: string
+          id: string
+          invited_by: string
+          invited_email: string
+          role: Database["public"]["Enums"]["household_role"]
+          status: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          household_id: string
+          id?: string
+          invited_by: string
+          invited_email: string
+          role?: Database["public"]["Enums"]["household_role"]
+          status?: string
+          token?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          household_id?: string
+          id?: string
+          invited_by?: string
+          invited_email?: string
+          role?: Database["public"]["Enums"]["household_role"]
+          status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_invitations_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      household_members: {
+        Row: {
+          household_id: string
+          id: string
+          joined_at: string
+          role: Database["public"]["Enums"]["household_role"]
+          user_id: string
+        }
+        Insert: {
+          household_id: string
+          id?: string
+          joined_at?: string
+          role?: Database["public"]["Enums"]["household_role"]
+          user_id: string
+        }
+        Update: {
+          household_id?: string
+          id?: string
+          joined_at?: string
+          role?: Database["public"]["Enums"]["household_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          owner_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          owner_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          owner_id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       investments: {
         Row: {
@@ -853,10 +963,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_category_benchmarks: {
+        Args: never
+        Returns: {
+          avg_monthly_spend: number
+          category: string
+          user_count: number
+        }[]
+      }
+      get_household_role: {
+        Args: { _household_id: string; _user_id: string }
+        Returns: Database["public"]["Enums"]["household_role"]
+      }
+      is_household_member: {
+        Args: { _household_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      household_role: "owner" | "editor" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -983,6 +1108,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      household_role: ["owner", "editor", "viewer"],
+    },
   },
 } as const
