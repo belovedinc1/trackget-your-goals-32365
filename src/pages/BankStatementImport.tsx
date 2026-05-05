@@ -233,9 +233,9 @@ async function extractPDFText(file: File): Promise<string> {
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
     const textItems = content.items
-      .filter((item): item is { str: string; transform: number[] } => "str" in item && "transform" in item)
-      .map((item) => ({
-        text: item.str.trim(),
+      .filter((item: any) => typeof item?.str === "string" && Array.isArray(item?.transform))
+      .map((item: any) => ({
+        text: String(item.str).trim(),
         x: item.transform[4] || 0,
         y: Math.round(item.transform[5] || 0),
       }))

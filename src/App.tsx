@@ -33,6 +33,9 @@ import SplitExpenses from "./pages/SplitExpenses";
 import Investments from "./pages/Investments";
 import BankStatementImport from "./pages/BankStatementImport";
 import Challenges from "./pages/Challenges";
+import Households from "./pages/Households";
+import JoinHousehold from "./pages/JoinHousehold";
+import ExpenseComparison from "./pages/ExpenseComparison";
 import Install from "./pages/Install";
 import Support from "./pages/Support";
 import NotFound from "./pages/NotFound";
@@ -283,6 +286,9 @@ const App = () => (
               }
             />
             <Route path="/install" element={<Install />} />
+            <Route path="/join-household" element={<JoinHousehold />} />
+            <Route path="/households" element={<ProtectedRoute><AppLayout><Households /></AppLayout></ProtectedRoute>} />
+            <Route path="/compare" element={<ProtectedRoute><AppLayout><ExpenseComparison /></AppLayout></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
